@@ -1,0 +1,1 @@
+{"name":"toyo-taishitsu-app","version":"0.1.0","private":true,"scripts":{"test":"node --test","build":"node scripts/build.mjs"},"type":"module","engines":{"node":">=18"}}
