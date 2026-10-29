@@ -1,6 +1,8 @@
+import {setupEightUI,evaluateCandidate} from './hakkou.js';
 import {SIGNS,rankPatterns} from './pro-guide.js';
 export function setupProUI(){
  const root=document.getElementById('proAssessment');if(!root)return;
+ const getEight=setupEightUI();
  const options=document.getElementById('proSigns');
  for(const [id,label] of SIGNS){const wrapper=document.createElement('label');wrapper.className='pro-check';const chk=document.createElement('input');chk.type='checkbox';chk.value=id;const span=document.createElement('span');span.textContent=label;wrapper.append(chk,span);options.append(wrapper);}
  document.getElementById('proAnalyze').addEventListener('click',()=>{
@@ -13,7 +15,7 @@ export function setupProUI(){
   if(!matches.length){out.textContent='設定した候補と十分な一致がありません。候補なしとして、問診・診察と他の原因の検討を優先してください。';return;}
   const info=document.createElement('p');info.className='fine';info.textContent='以下は入力した所見との一致数による学習用の比較です。証・治療法・刺鍼部位を確定しません。';out.append(info);
   for(const p of matches){const card=document.createElement('article');card.className='pro-pattern';const h=document.createElement('h4');h.textContent=`${p.name}｜一致 ${p.hits.length}/${p.signals.length}`;card.append(h);
-   const desc=document.createElement('p');desc.textContent=`照合の考え方：${p.support}`;card.append(desc);
+   const ev=evaluateCandidate(p,getEight?.()||{});const evaluation=document.createElement('p');evaluation.textContent=`八綱・所見との照合：${ev.status}。支持：${ev.support.join('、')||'なし'}／矛盾：${ev.conflict.join('、')||'なし'}／未確認：${ev.unverified.join('、')||'なし'}`;card.append(evaluation);const q=document.createElement('p');q.textContent='追加鑑別質問：'+ev.questions.join('／');card.append(q);const desc=document.createElement('p');desc.textContent=`照合の考え方：${p.support}`;card.append(desc);
    const chk=document.createElement('p');chk.textContent=`追加確認：${p.check}`;card.append(chk);
    const head=document.createElement('strong');head.textContent='参考経穴と伝統的な選穴理由';card.append(head);
    const ul=document.createElement('ul');for(const [name,code,why] of p.points){const li=document.createElement('li');li.textContent=`${name}（${code}）：${why}`;ul.append(li);}card.append(ul);

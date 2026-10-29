@@ -24,3 +24,5 @@
 
 /* v1.1: 読みたい人だけ開く追加解説 */
 .deep-guide{margin-top:1.2rem}.deep-item{border:1px solid #c7ceb7;border-radius:14px;margin:12px 0;padding:12px 16px;background:#f7f5e9}.deep-item summary{font-weight:700;cursor:pointer;line-height:1.6}.deep-item p{line-height:1.85;margin:9px 0}.deep-item h4{margin:15px 0 3px;font-size:1rem}.deep-item:focus-within{outline:2px solid #738c6c;outline-offset:2px}
+
+.eight-form{display:grid;gap:14px;margin:14px 0}.eight-field{border:1px solid #b3bda6;border-radius:14px;padding:12px;min-width:0}.eight-field legend{font-weight:700;padding:0 6px}.eight-choice{display:block;padding:7px 4px;line-height:1.4}.eight-choice input{margin-right:7px;accent-color:#3c684e}#eightResult:empty{display:none}
