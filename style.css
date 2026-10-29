@@ -15,3 +15,6 @@
 .podium-caption small{color:#89754e;font-weight:700}
 .v07-podium h3{margin-bottom:5px}
 @media(max-width:360px){.podium{gap:5px}.podium-caption{padding:7px 2px}}
+
+/* v0.8: 五行を独立した生活セルフチェックとして可視化 */
+.five-list{display:grid;gap:14px;margin-top:16px}.five-item{padding:12px;border:1px solid #d4d9c1;border-radius:15px;background:#f7f7e9}.five-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.five-head strong{font-size:1rem}.five-track{height:9px;background:#e4e6d7;border-radius:9px;overflow:hidden;margin:10px 0}.five-track>div{height:100%;background:#6e9b70;border-radius:9px}.five-item small{display:block;line-height:1.5}.five-summary{font-weight:700;color:#355d46}.care-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}.care-mini{padding:12px;background:#edf1e3;border-radius:12px;font-size:.9rem}.care-mini p{margin:8px 0 0;line-height:1.55}@media(max-width:520px){.care-grid{grid-template-columns:1fr}.care-mini{padding:12px 14px}}

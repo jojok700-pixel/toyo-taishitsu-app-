@@ -1,5 +1,5 @@
-import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes} from './data.js';
-const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};const allQuestions=[...QUESTIONS,...AXIS_QUESTIONS];let result=null;let mode='patient';
+import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js';
+const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};const allQuestions=[...QUESTIONS,...AXIS_QUESTIONS,...ELEMENT_QUESTIONS];let result=null;let mode='patient';
 const picture=id=>`./assets/${id}.png`;
 function setMode(next){mode=next;for(const [id,value] of [['patientMode','patient'],['expertMode','expert']]){$(id).classList.toggle('selected',value===next);$(id).setAttribute('aria-pressed',String(value===next));}$('modeExplain').textContent=next==='expert'?'弁証の補助情報は認証後に表示。問診のみで確定しません。':'セルフケアと体質傾向をやさしく紹介します。';$('proSection').classList.toggle('hidden',next!=='expert');}
 $('patientMode').addEventListener('click',()=>setMode('patient'));$('expertMode').addEventListener('click',()=>setMode('expert'));
@@ -9,6 +9,7 @@ function render(){const q=allQuestions[position];$('progressText').textContent=`
 function finish(){
  result=calculate(answers);
  const axes=calculateAxes(answers);
+ const five=calculateElements(answers);
  $('axisTemperature').textContent=`寒さ・熱さ：${axes.temperature}（寒さ ${axes.values.cold}/3、熱さ ${axes.values.heat}/3）`;
  $('axisStrength').textContent=`疲れやすさ・張り：${axes.strength}（疲れやすさ ${axes.values.deficiency}/3、張り ${axes.values.excess}/3）`;
  const t=result.primary;
@@ -32,7 +33,7 @@ function finish(){
  $('resultMascot').src=picture(t.id);
  $('resultMascot').alt=`${t.name}のキャラクター`;
  $('resultLead').textContent=`${t.desc}が相対的に目立ちました。これは質問への回答を単純集計した結果で、医学的な診断ではありません。`;
- const others=result.ordered.filter(x=>!best.some(b=>b.id===x.id)).slice(0,3);
+ const others=result.ordered.filter(x=>x.score>0&&!best.some(b=>b.id===x.id)).slice(0,3);
  $('secondaryText').textContent=isZero?'今回の回答では、目立った傾向を確認できませんでした。':others.length?others.map(x=>`${x.name}（${x.score}/6）`).join('、')+'。複数の傾向が重なることもあります。':'すべての体質が同点です。';
  $('podium').replaceChildren();
  const leading=result.ordered.filter(x=>x.score>0).slice(0,3);
@@ -40,7 +41,14 @@ function finish(){
  if(!leading.length){$('podium').textContent='今回の回答では特定の体質傾向を強調しません。';}
  $('scoreList').replaceChildren();
  result.ordered.forEach(s=>{const row=document.createElement('div');row.className='score';const name=document.createElement('span');name.textContent=s.name;const num=document.createElement('span');num.textContent=`${s.score} / 6`;row.append(name,num);const bar=document.createElement('div');bar.className='bar';const inner=document.createElement('div');inner.style.width=`${s.percentage}%`;bar.append(inner);$('scoreList').append(row,bar);});
- $('elementText').textContent=isZero?'今回の回答から五行の傾向は推定しません。':isTie?`同点タイプに対応する伝統的な五行の参考：${[...new Set(best.map(x=>x.element))].join('・')}。体質から五臓の病気は判断できません。`:`${t.name}と関連づける五行：${t.element}。この対応は概念を理解するための参考です。`;
+ $('elementText').textContent='五行は独立した5問で、最近の生活上の気がかりを見える化しています。五臓の病気・証・性格を判定しません。';
+ $('fiveList').replaceChildren();
+ for(const e of five.ordered){const item=document.createElement('div');item.className='five-item';const head=document.createElement('div');head.className='five-head';const title=document.createElement('strong');title.textContent=`${e.symbol} ${e.label}｜${e.topic}`;const val=document.createElement('span');val.textContent=`${e.score}/3`;head.append(title,val);const track=document.createElement('div');track.className='five-track';const bar=document.createElement('div');bar.style.width=`${e.score/3*100}%`;track.append(bar);const small=document.createElement('small');small.textContent=e.tip;item.append(head,track,small);$('fiveList').append(item);}
+ $('fiveSummary').textContent=five.top.length===0?'今回は五行の質問で目立つ回答はありませんでした。':`最近の暮らしで見直したいテーマ：${five.top.map(e=>`${e.label}（${e.topic}）`).join('・')}。複数あれば並列に扱います。`;
+ const selectedCare=(!isTie&&!isZero)?CARE_GUIDES[t.id]:null;
+ $('careGrid').replaceChildren();
+ const guide=selectedCare||{food:'規則的な食事を心がける。',activity:'体調に合わせて無理なく動く。',rest:'十分な休養をとる。'};
+ for(const [heading,detail] of [['🍚 食事',guide.food],['🚶 運動',guide.activity],['🌙 休息',guide.rest]]){const card=document.createElement('div');card.className='care-mini';const title=document.createElement('strong');title.textContent=heading;const para=document.createElement('p');para.textContent=detail;card.append(title,para);$('careGrid').append(card);}
  $('careText').textContent=isZero?'無理に体質を決めず、日頃の休養・睡眠・食事を大切にしてください。':isTie?'複数の傾向があります。負担のない軽い運動・規則的な休養など共通する生活習慣から始めましょう。':t.care;
  $('pointName').textContent=isTie||isZero?'ツボ押しは希望に応じて：参考情報のみ':`セルフケアの参考：${t.point}（${t.code}）`;
  $('pointWhere').textContent=isTie||isZero?'同点や根拠が乏しい結果から、特定のツボを推奨しません。':t.where;
