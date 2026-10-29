@@ -1,7 +1,8 @@
+import {setupProUI} from './pro-ui.js';
 import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js';
 const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};const allQuestions=[...QUESTIONS,...AXIS_QUESTIONS,...ELEMENT_QUESTIONS];let result=null;let mode='patient';
 const picture=id=>`./assets/${id}.png`;
-function setMode(next){mode=next;for(const [id,value] of [['patientMode','patient'],['expertMode','expert']]){$(id).classList.toggle('selected',value===next);$(id).setAttribute('aria-pressed',String(value===next));}$('modeExplain').textContent=next==='expert'?'弁証の補助情報は認証後に表示。問診のみで確定しません。':'セルフケアと体質傾向をやさしく紹介します。';$('proSection').classList.toggle('hidden',next!=='expert');}
+function setMode(next){mode=next;for(const [id,value] of [['patientMode','patient'],['expertMode','expert']]){$(id).classList.toggle('selected',value===next);$(id).setAttribute('aria-pressed',String(value===next));}$('modeExplain').textContent=next==='expert'?'弁証の補助情報は認証後に表示。問診のみで確定しません。':'セルフケアと体質傾向をやさしく紹介します。';$('proSection').classList.toggle('hidden',next!=='expert');$('proAssessment').classList.toggle('hidden',next!=='expert');}
 $('patientMode').addEventListener('click',()=>setMode('patient'));$('expertMode').addEventListener('click',()=>setMode('expert'));
 for(const t of TYPES){const card=document.createElement('div');card.className='mascot-card';const im=document.createElement('img');im.src=picture(t.id);im.alt=`${t.name}のキャラクター試作`;im.loading='lazy';const name=document.createElement('strong');name.textContent=t.name;card.append(im,name);$('gallery').append(card);}setMode('patient');
 function show(name){for(const id of ['intro','quiz','result'])$(id).classList.toggle('hidden',id!==name);window.scrollTo({top:0,behavior:'smooth'});}
@@ -52,7 +53,7 @@ function finish(){
  $('careText').textContent=isZero?'無理に体質を決めず、日頃の休養・睡眠・食事を大切にしてください。':isTie?'複数の傾向があります。負担のない軽い運動・規則的な休養など共通する生活習慣から始めましょう。':t.care;
  $('pointName').textContent=isTie||isZero?'ツボ押しは希望に応じて：参考情報のみ':`セルフケアの参考：${t.point}（${t.code}）`;
  $('pointWhere').textContent=isTie||isZero?'同点や根拠が乏しい結果から、特定のツボを推奨しません。':t.where;
- $('proOutput').classList.add('hidden');$('proStatus').textContent='';$('proSection').classList.toggle('hidden',mode!=='expert');show('result');
+ $('proOutput').classList.add('hidden');$('proStatus').textContent='';$('proSection').classList.toggle('hidden',mode!=='expert');$('proAssessment').classList.toggle('hidden',mode!=='expert');show('result');
 }
 $('start').addEventListener('click',()=>{position=0;answers={};show('quiz');render();});$('back').addEventListener('click',()=>{if(position>0){position--;render();}});$('reset').addEventListener('click',()=>{position=0;answers={};show('intro');});
 $('proButton').addEventListener('click',async()=>{if(!result)return;const btn=$('proButton');btn.disabled=true;$('proStatus').textContent='情報を確認しています…';$('proOutput').classList.add('hidden');try{const response=await fetch('/.netlify/functions/pro',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:result.primary.id,accessKey:$('accessKey').value})});const data=await response.json();if(!response.ok)throw new Error(data.error||`通信エラー ${response.status}`);const box=$('proOutput');box.replaceChildren();for(const [label,value] of [['弁証候補',data.pattern],['追加確認事項',data.reason],['参考経穴',data.acupoints.map(x=>`${x.name}（${x.code}）：${x.reason}`).join('、')],['注意',data.notes]]){const p=document.createElement('p');const strong=document.createElement('strong');strong.textContent=label+'：';p.append(strong,document.createTextNode(value));box.append(p);}box.classList.remove('hidden');$('proStatus').textContent='表示しました。';}catch(e){$('proStatus').textContent=e.message;}finally{btn.disabled=false;}});
@@ -64,3 +65,5 @@ if(location.hostname.endsWith('github.io')){
   $('feedbackForm').querySelectorAll('input,textarea,select,button').forEach(el=>el.disabled=true);
   $('feedbackStatus').textContent='この公開先では感想の保存・送信はできません。';
 }
+
+setupProUI();
