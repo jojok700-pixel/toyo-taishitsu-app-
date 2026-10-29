@@ -24,3 +24,21 @@ export function calculate(answers){
  const ordered=TYPES.map(t=>({...t,score:scores[t.id],percentage:Math.round(scores[t.id]/6*100)})).sort((a,b)=>b.score-a.score||TYPES.findIndex(t=>t.id===a.id)-TYPES.findIndex(t=>t.id===b.id));
  return {ordered,primary:ordered[0],ties:ordered.filter(t=>t.score===ordered[0].score).length};
 }
+
+// Separate exploratory prompts: not validated eight-principle assessment.
+export const AXIS_QUESTIONS = [
+ {id:'a1',axis:'cold',text:'最近、温かくしていても寒さを感じることが多い'},
+ {id:'a2',axis:'heat',text:'最近、暑がり・ほてりが気になることが多い'},
+ {id:'a3',axis:'deficiency',text:'最近、無理をすると疲れが残りやすい'},
+ {id:'a4',axis:'excess',text:'最近、張りや重苦しさが気になることが多い'}
+];
+export function calculateAxes(answers){
+ const values=Object.fromEntries(AXIS_QUESTIONS.map(q=>[q.axis,0]));
+ for(const q of AXIS_QUESTIONS){ const n=Number(answers[q.id]); if(!Number.isInteger(n)||n<0||n>3)throw new Error('補足質問にも回答してください'); values[q.axis]=n; }
+ const pair=(left,right,leftLabel,rightLabel)=>{
+  if(values[left]===0 && values[right]===0)return '目立つ回答なし';
+  if(values[left]===values[right])return '同程度（方向は決めません）';
+  return `${values[left]>values[right]?leftLabel:rightLabel}に関する回答が相対的に多め`;
+ };
+ return {values,temperature:pair('cold','heat','寒さ','熱さ'),strength:pair('deficiency','excess','疲れやすさ','張り・重苦しさ')};
+}

@@ -1,13 +1,16 @@
-import {QUESTIONS,TYPES,calculate} from './data.js';
-const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};let result=null;let mode='patient';
+import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes} from './data.js';
+const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};const allQuestions=[...QUESTIONS,...AXIS_QUESTIONS];let result=null;let mode='patient';
 const picture=id=>`./assets/${id}.png`;
 function setMode(next){mode=next;for(const [id,value] of [['patientMode','patient'],['expertMode','expert']]){$(id).classList.toggle('selected',value===next);$(id).setAttribute('aria-pressed',String(value===next));}$('modeExplain').textContent=next==='expert'?'弁証の補助情報は認証後に表示。問診のみで確定しません。':'セルフケアと体質傾向をやさしく紹介します。';$('proSection').classList.toggle('hidden',next!=='expert');}
 $('patientMode').addEventListener('click',()=>setMode('patient'));$('expertMode').addEventListener('click',()=>setMode('expert'));
 for(const t of TYPES){const card=document.createElement('div');card.className='mascot-card';const im=document.createElement('img');im.src=picture(t.id);im.alt=`${t.name}のキャラクター試作`;im.loading='lazy';const name=document.createElement('strong');name.textContent=t.name;card.append(im,name);$('gallery').append(card);}setMode('patient');
 function show(name){for(const id of ['intro','quiz','result'])$(id).classList.toggle('hidden',id!==name);window.scrollTo({top:0,behavior:'smooth'});}
-function render(){const q=QUESTIONS[position];$('progressText').textContent=`${position+1} / ${QUESTIONS.length}`;$('progressBar').style.width=`${(position+1)/QUESTIONS.length*100}%`;$('questionText').textContent=q.text;$('back').disabled=position===0;$('choices').replaceChildren();values.forEach((v,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=v;b.addEventListener('click',()=>{answers[q.id]=i;if(position<QUESTIONS.length-1){position++;render();}else finish();});$('choices').append(b);});}
+function render(){const q=allQuestions[position];$('progressText').textContent=`${position+1} / ${allQuestions.length}`;$('progressBar').style.width=`${(position+1)/allQuestions.length*100}%`;$('questionText').textContent=q.text;$('back').disabled=position===0;$('choices').replaceChildren();values.forEach((v,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=v;b.addEventListener('click',()=>{answers[q.id]=i;if(position<allQuestions.length-1){position++;render();}else finish();});$('choices').append(b);});}
 function finish(){
  result=calculate(answers);
+ const axes=calculateAxes(answers);
+ $('axisTemperature').textContent=`寒さ・熱さ：${axes.temperature}（寒さ ${axes.values.cold}/3、熱さ ${axes.values.heat}/3）`;
+ $('axisStrength').textContent=`疲れやすさ・張り：${axes.strength}（疲れやすさ ${axes.values.deficiency}/3、張り ${axes.values.excess}/3）`;
  const t=result.primary;
  const best=result.ordered.filter(x=>x.score===t.score);
  const isTie=best.length>1;
@@ -31,6 +34,10 @@ function finish(){
  $('resultLead').textContent=`${t.desc}が相対的に目立ちました。これは質問への回答を単純集計した結果で、医学的な診断ではありません。`;
  const others=result.ordered.filter(x=>!best.some(b=>b.id===x.id)).slice(0,3);
  $('secondaryText').textContent=isZero?'今回の回答では、目立った傾向を確認できませんでした。':others.length?others.map(x=>`${x.name}（${x.score}/6）`).join('、')+'。複数の傾向が重なることもあります。':'すべての体質が同点です。';
+ $('podium').replaceChildren();
+ const leading=result.ordered.filter(x=>x.score>0).slice(0,3);
+ leading.forEach((x,i)=>{const card=document.createElement('div');card.className='podium-card';if(i===0)card.classList.add('first');const img=document.createElement('img');img.src=picture(x.id);img.alt=`${x.name}キャラクター`;img.loading='lazy';const caption=document.createElement('div');caption.className='podium-caption';const label=document.createElement('strong');label.textContent=`${x.name} · ${x.score}/6`;const rank=document.createElement('small');rank.textContent=`${result.ordered.filter(y=>y.score>x.score).length+1}位`;caption.append(rank,label);card.append(img,caption);$('podium').append(card);});
+ if(!leading.length){$('podium').textContent='今回の回答では特定の体質傾向を強調しません。';}
  $('scoreList').replaceChildren();
  result.ordered.forEach(s=>{const row=document.createElement('div');row.className='score';const name=document.createElement('span');name.textContent=s.name;const num=document.createElement('span');num.textContent=`${s.score} / 6`;row.append(name,num);const bar=document.createElement('div');bar.className='bar';const inner=document.createElement('div');inner.style.width=`${s.percentage}%`;bar.append(inner);$('scoreList').append(row,bar);});
  $('elementText').textContent=isZero?'今回の回答から五行の傾向は推定しません。':isTie?`同点タイプに対応する伝統的な五行の参考：${[...new Set(best.map(x=>x.element))].join('・')}。体質から五臓の病気は判断できません。`:`${t.name}と関連づける五行：${t.element}。この対応は概念を理解するための参考です。`;

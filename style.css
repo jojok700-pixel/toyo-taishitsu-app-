@@ -5,3 +5,13 @@
 .mode-switch{background:#f8fbf5;border:1px solid #d6e6dc;padding:16px;border-radius:16px;margin:20px 0}.mode-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.mode-buttons button{font-size:.88rem;background:#edf2ed;color:#426350;padding:12px 5px}.mode-buttons button.selected{background:#286854;color:white}.mascot-gallery{margin:24px 0}.gallery-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.mascot-card{text-align:center;background:#fff9f2;border:1px solid #e7ebe1;border-radius:12px;padding:6px;font-size:.8rem}.mascot-card img{width:100%;height:112px;object-fit:cover;object-position:top;border-radius:8px}.result-hero{display:flex;gap:14px;align-items:center;background:#fff7ed;border-radius:18px;padding:12px;margin:15px 0}.result-hero img{width:125px;height:170px;object-fit:cover;object-position:top;border-radius:12px;flex:none}.result-hero h1{font-size:1.55rem}.result-hero p{font-size:.9rem}.point-note{background:#fff7e9;padding:12px;border-radius:12px;margin-top:14px}.point-note p{margin:4px 0}@media(max-width:420px){.gallery-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}.mascot-card{padding:4px;font-size:.73rem}.mascot-card img{height:92px}.result-hero img{width:100px;height:138px}}
 /* v0.6: 同点のキャラクターを対等に表示 */
 .tie-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0 20px}.tie-card{border:1px solid #d6e9dd;border-radius:16px;background:#fff8f1;padding:12px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center}.tie-card img{height:130px;width:100%;max-width:150px;object-fit:contain;border-radius:12px}.tie-card strong{font-size:.98rem}.v06-summary{background:#eaf4ed;border-color:#c9e4d2}.v06-summary p{margin:6px 0}.result-hero.hidden{display:none}@media(min-width:560px){.tie-gallery{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* v0.7: responsive ranked mascot cards */
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.podium-card{min-width:0;background:#f6f0df;border:1px solid #e4dfc8;border-radius:17px;overflow:hidden;text-align:center;box-shadow:0 4px 16px #314c3912}
+.podium-card.first{border:2px solid #ba955b;background:#fff5da}
+.podium-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.podium-caption{display:flex;flex-direction:column;gap:4px;padding:8px 3px 11px;color:#344a34;font-size:clamp(11px,2.7vw,15px)}
+.podium-caption small{color:#89754e;font-weight:700}
+.v07-podium h3{margin-bottom:5px}
+@media(max-width:360px){.podium{gap:5px}.podium-caption{padding:7px 2px}}
