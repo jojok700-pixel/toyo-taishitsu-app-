@@ -21,3 +21,6 @@
 
 /* v0.9: 専門家向け学習プレビュー */
 .pro-signs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}.pro-check{display:flex;align-items:flex-start;gap:8px;background:#f1f7f2;padding:10px;border-radius:11px;margin:0;line-height:1.5;font-weight:500;font-size:.88rem}.pro-check input{width:18px;height:18px;flex:none;margin:2px 0;accent-color:#286854}.pro-pattern{border:1px solid #c8dccd;background:#f8fbf7;border-radius:14px;padding:16px;margin:14px 0}.pro-pattern h4{margin:0 0 8px}.pro-pattern p{font-size:.9rem;line-height:1.7}.pro-pattern li{margin:8px 0;line-height:1.6}.pro-pattern small{color:#627166}@media(max-width:430px){.pro-signs{grid-template-columns:1fr}}
+
+/* v1.1: 読みたい人だけ開く追加解説 */
+.deep-guide{margin-top:1.2rem}.deep-item{border:1px solid #c7ceb7;border-radius:14px;margin:12px 0;padding:12px 16px;background:#f7f5e9}.deep-item summary{font-weight:700;cursor:pointer;line-height:1.6}.deep-item p{line-height:1.85;margin:9px 0}.deep-item h4{margin:15px 0 3px;font-size:1rem}.deep-item:focus-within{outline:2px solid #738c6c;outline-offset:2px}
