@@ -115,7 +115,7 @@ ranked.forEach((p,i)=>{
  const organText=p.om.length?`五臓：${safe(p.om.join('・'))}`:'五臓：入力との明確な一致は未確認';
  const axisText=p.am.length?`八綱：${safe(p.am.join('・'))}が一致`:'八綱：支持する一致軸は未確認';
  const tonguePulse=p.tp.length?`舌脈：${safe(p.tp.join('・'))}の参考所見が一致`:'舌脈：一致を確認できていません';
- const image=characterImages[p.name]?`<img loading="lazy" src="./${characterImages[p.name]}?v=26" alt="${safe(p.name)}の仮キャラクター">`:<span class="hint">対応画像がありません</span>`;
+ const image=characterImages[p.name]?`<img loading="lazy" src="./${characterImages[p.name]}?v=26" alt="${safe(p.name)}の仮キャラクター">`:`<span class="hint">対応画像がありません</span>`;
  const story=characterStories[p.name]||'この証の物語は準備中です。';
  div.innerHTML=`<div class="result-hero"><div class="mascot-visual">${image}</div><div><div class="status-line">${i+1}番目の参考候補 ／ ${safe(status)}</div><h3>${safe(p.name)}</h3><p class="result-story">${safe(story)}</p></div></div>
  <div class="result-reason"><strong>入力から確認できた根拠</strong><p>${mainText}</p><p>${organText}</p><p>${axisText}</p><p>${tonguePulse}</p></div>
