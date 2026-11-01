@@ -25,7 +25,7 @@ const ELEM_POINT={wood:'太衝',fire:'神門',earth:'公孫',metal:'列欠',wate
 const TYPE_THEME={qi:'疲れやすさと活動量',stagnation:'緊張と気分転換',blood:'疲労感と生活の余白',stasis:'同じ姿勢が続く生活',damp:'重だるさと生活リズム',yin:'乾燥・ほてりと休養',yang:'冷えと無理のない活動',essence:'回復のペース'};
 const add=(parent,tag,txt,cls)=>{const el=document.createElement(tag);if(cls)el.className=cls;el.textContent=txt;parent.append(el);return el};
 const section=(root,title,body)=>{const d=document.createElement('div');d.className='tlr-section';add(d,'h3',title);add(d,'p',body);root.append(d);return d};
-const pointBlock=(root,name,role)=>{const [code,tag,desc]=POINTS[name];const wrap=document.createElement('div');wrap.className='tlr-point';add(wrap,'strong',`${name}（${code}）｜${role}`);add(wrap,'p',desc);add(wrap,'small',`分類：${tag}。参考候補であり効果を保証しません。位置図は専門確認まで公開しません。`);root.append(wrap)};
+const pointBlock=(root,name,role)=>{const [code,tag,desc]=POINTS[name];const wrap=document.createElement('div');wrap.className='tlr-point';add(wrap,'strong',`${name}（${code}）｜${role}`);add(wrap,'p',desc);add(wrap,'small',`分類：${tag}。伝統的な養生の参考候補です。`);root.append(wrap)};
 export function renderFinalReport({types=[],elements=[],guide,lowEvidence=false}){
  let root=document.getElementById('toyoFinalReport');
  if(!root){root=document.createElement('section');root.id='toyoFinalReport';root.className='resultbox tlr-wrap';}
@@ -53,18 +53,13 @@ export function renderFinalReport({types=[],elements=[],guide,lowEvidence=false}
  for(const [name,txt,why] of [['🍚 食事',care.food,'忙しい日に食事が不規則になっていないかを確認。無理なく食べられる形で栄養と水分を補いましょう。'],['🚶 活動',care.activity,'活動は多いほどよいとは限りません。運動の翌日まで疲れが残るなら、時間や強さを減らしましょう。'],['🌙 休養',care.rest,'休む時間を後から捻出するのではなく、最初から予定に入れてみましょう。']]){
   const p=add(c,'p',`${name}｜${txt}`);p.style.fontWeight='600';add(c,'p',why);
  }
- const pts=section(root,'04｜今回の参考ツボ','東洋医学で伝統的に用いられる候補です。効果が保証された組み合わせではなく、位置図は専門確認まで表示しません。');
+ const pts=section(root,'04｜今回の参考ツボ','体質と五行に関連する、東洋医学の参考ツボです。');
  const names=[];
  for(const t of types){const n=TYPE_POINT[t.id];if(n&&!names.includes(n))names.push(n);}
  for(const e of elements){const en=ELEM_POINT[e.id];if(en&&!names.includes(en))names.push(en);}
  for(const name of names.slice(0,3))pointBlock(pts,name,(TYPE_POINT[primary.id]===name?'体質から':'関連する傾向から'));
  if(!names.length)add(pts,'p','今回の回答に対応するツボを特定できませんでした。');
  add(pts,'p','ツボの正確な位置を確認できない場合は押さないでください。強く押す、長時間押すことは避け、痛み・傷・腫れ・炎症のある部位への刺激は控えましょう。妊娠中や治療中の方は医療者にご相談ください。','tlr-fine');
- const week=section(root,'05｜7日間のセルフケアプラン','一週間で全部やろうとせず、続けられる目標を一つ選んでください。');
- const habits=['休憩する時間を毎日5〜10分予定に入れる','朝か昼の食事を抜かず、就寝時刻を整える','疲れを残さない短い散歩やストレッチをする'];
- const sel=document.createElement('select');sel.setAttribute('aria-label','7日間の目標を選択');for(const h of habits){const o=document.createElement('option');o.value=o.textContent=h;sel.append(o);}week.append(sel);
- const chosen=add(week,'p',`今週の目標：${habits[0]}`);sel.addEventListener('change',()=>chosen.textContent=`今週の目標：${sel.value}`);
- const btn=document.createElement('button');btn.type='button';btn.textContent='目標をコピー';btn.className='secondary';btn.addEventListener('click',()=>{if(!navigator.clipboard?.writeText){btn.textContent='お使いの環境ではコピーできません';return;}navigator.clipboard.writeText(`東洋ケアラボ｜今週の目標：${sel.value}`).then(()=>{btn.textContent='コピーしました'}).catch(()=>{btn.textContent='コピーできませんでした'});});week.append(btn);
  const synthesis=section(root,'06｜あなたの生活に結びつける総合アドバイス',`今回の中心は「${typeNames}」と「${elemNames}」の組み合わせです。${pair?.interpretation||'日常の負担と回復のバランスが気になります。'} ここで大切なのは体質名を決めつけることではなく、今日の暮らしのどこで無理が生じているかを見つけることです。`);
  add(synthesis,'h4','まず振り返ってほしい3つの場面');
  add(synthesis,'p',`朝：目覚めたときに疲れが残っていないでしょうか。${care.food} 食事を抜きやすい日は、用意しやすい食事から整えましょう。`);
@@ -72,8 +67,6 @@ export function renderFinalReport({types=[],elements=[],guide,lowEvidence=false}
  add(synthesis,'p',`夜：寝る直前まで予定や考え事が続いていないでしょうか。${care.rest} 翌朝の調子を一週間見比べると、自分に合うペースを見つけやすくなります。`);
  add(synthesis,'h4','今回のツボをどう取り入れる？');
  add(synthesis,'p',`上の「参考ツボ」は${typeNames}と${elemNames}の養生テーマから選んだ候補です。ツボ押しを必須にせず、負担の少ない休養・食事・運動を基本に、関心のある方が補助的に活用してください。`);
- add(synthesis,'h4','最初の一週間の目安');
- add(synthesis,'p',`今週は目標を一つだけ選び、できた日を数えてみましょう。完璧に続けることより「どんな日に疲れやすいか」「何をすると楽に過ごせるか」に気づくことが、次のセルフケアにつながります。`);
  section(root,'07｜あなたへの最後のメッセージ',`今回目立った「${typeNames}」と「${elemNames}」は、あなたの限界や性格を決めるラベルではありません。 今の生活の中で、どこに力を使い、どこで力を回復するかを考える手がかりです。まず一つ、休む・食べる・動くのバランスを自分で選び直してみてください。`);
  add(root,'p','このチェックは病気や体質を確定する診断ではありません。疲れや立ちくらみなどが続く場合は医療機関へ。胸痛、息苦しさ、失神などの危険徴候があれば速やかに医療につなげてください。','tlr-fine');
 }
