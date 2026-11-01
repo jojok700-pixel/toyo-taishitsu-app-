@@ -1,4 +1,4 @@
-import {renderFinalReport} from './final-report.js?v=2';
+import {renderFinalReport} from './final-report.js?v=4';
 import {combinedAdvice} from './constitution-five-link.js';
 import {setupProUI} from './pro-ui.js';
 import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js';
@@ -61,15 +61,20 @@ function finish(){
   for(const ty of selectedTypes)for(const el of selectedElements){const a=combinedAdvice(ty.id,el.id);if(!a)continue;const card=document.createElement('div');card.style.cssText='border-top:1px solid #cadbc9;padding:12px 0';const h=document.createElement('h4');h.textContent=`${ty.name} × ${el.symbol} ${el.label}（${el.topic}）`;const p=document.createElement('p');p.textContent=a.interpretation;const act=document.createElement('p');act.textContent=`今日から：${a.action}`;card.append(h,p,act);bridge.append(card);}
  }
 
- const selectedCare=(!isTie&&!isZero)?CARE_GUIDES[t.id]:null;
+ const selectedCare=CARE_GUIDES[t.id]||null;
  $('careGrid').replaceChildren();
  const guide=selectedCare||{food:'規則的な食事を心がける。',activity:'体調に合わせて無理なく動く。',rest:'十分な休養をとる。'};
  for(const [heading,detail] of [['🍚 食事',guide.food],['🚶 運動',guide.activity],['🌙 休息',guide.rest]]){const card=document.createElement('div');card.className='care-mini';const title=document.createElement('strong');title.textContent=heading;const para=document.createElement('p');para.textContent=detail;card.append(title,para);$('careGrid').append(card);}
  $('careText').textContent=isZero?'無理に体質を決めず、日頃の休養・睡眠・食事を大切にしてください。':isTie?'複数の傾向があります。負担のない軽い運動・規則的な休養など共通する生活習慣から始めましょう。':t.care;
  $('pointName').textContent=isTie||isZero?'ツボ押しは希望に応じて：参考情報のみ':`セルフケアの参考：${t.point}（${t.code}）`;
  $('pointWhere').textContent=isTie||isZero?'同点や根拠が乏しい結果から、特定のツボを推奨しません。':t.where;
- renderFinalReport({types:result.ordered.filter(x=>x.score===t.score&&x.score>0).slice(0,3), elements:five.ordered.filter(x=>x.score===five.ordered[0].score&&x.score>0).slice(0,2), guide});
+ renderFinalReport({types:result.ordered.filter(x=>x.score===t.score).slice(0,3), elements:five.ordered.filter(x=>x.score===five.ordered[0].score).slice(0,2), guide, lowEvidence:isZero||five.ordered[0].score===0});
  bridge.remove();
+ // 簡易版の五行解説は総合レポートの後ろに配置（詳しい説明は残す）。
+ const resultPanel=document.getElementById('result');
+ const fiveDetail=document.getElementById('fiveList').closest('.resultbox');
+ const report=document.getElementById('toyoFinalReport');
+ if(report && fiveDetail){report.after(fiveDetail);}
  show('result');
 }
 $('start').addEventListener('click',()=>{position=0;answers={};show('quiz');render();});$('back').addEventListener('click',()=>{if(position>0){position--;render();}});$('reset').addEventListener('click',()=>{position=0;answers={};show('intro');});

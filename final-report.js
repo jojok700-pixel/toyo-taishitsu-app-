@@ -26,7 +26,7 @@ const TYPE_THEME={qi:'疲れやすさと活動量',stagnation:'緊張と気分�
 const add=(parent,tag,txt,cls)=>{const el=document.createElement(tag);if(cls)el.className=cls;el.textContent=txt;parent.append(el);return el};
 const section=(root,title,body)=>{const d=document.createElement('div');d.className='tlr-section';add(d,'h3',title);add(d,'p',body);root.append(d);return d};
 const pointBlock=(root,name,role)=>{const [code,tag,desc]=POINTS[name];const wrap=document.createElement('div');wrap.className='tlr-point';add(wrap,'strong',`${name}（${code}）｜${role}`);add(wrap,'p',desc);add(wrap,'small',`分類：${tag}。参考候補であり効果を保証しません。位置図は専門確認まで公開しません。`);root.append(wrap)};
-export function renderFinalReport({types=[],elements=[],guide}){
+export function renderFinalReport({types=[],elements=[],guide,lowEvidence=false}){
  let root=document.getElementById('toyoFinalReport');
  if(!root){root=document.createElement('section');root.id='toyoFinalReport';root.className='resultbox tlr-wrap';}
  const target=document.getElementById('result');const anchor=document.querySelector('#result .v07-podium')||document.getElementById('reset');target.insertBefore(root,anchor);
@@ -34,10 +34,11 @@ export function renderFinalReport({types=[],elements=[],guide}){
  add(root,'div','東洋ケアラボ｜診断のまとめ','tlr-overline');
  add(root,'h2','あなたの体質と五行をつなぐ、総合セルフケアレポート');
  if(!types.length||!elements.length){
-  section(root,'今回の結果の読み方','いくつかの傾向が拮抗しています。無理に一つの体質に決めず、睡眠、食事、体調に合った活動の基本から整えましょう。');
-  section(root,'セルフケアの優先順位','まずは食事を抜かないこと、睡眠を確保すること、疲れが残る日は運動を控えめにすることから。ツボは十分な回答根拠がないため、今回の結果から自動選択しません。');
-  add(root,'p','本レポートは生活習慣を振り返るための参考情報です。医学的診断ではありません。','tlr-fine');return;
+  section(root,'今回の回答','体質や五行に関する回答を読み取れませんでした。回答を確認してください。');
+  section(root,'参考ツボ','回答と紐付かない特定のツボは紹介していません。');
+  return;
  }
+ if(lowEvidence){add(root,'p','回答の多くが低得点または同点です。以下は診断ではなく、複数の養生テーマを並列に紹介したものです。','tlr-fine');}
  const primary=types[0],elem=elements[0],pair=combinedAdvice(primary.id,elem.id);
  const typeNames=types.map(t=>t.name).join('・'),elemNames=elements.map(e=>e.label).join('・');
  add(root,'h3',`${typeNames} × ${elemNames}｜今回の養生テーマ`);
@@ -55,8 +56,9 @@ export function renderFinalReport({types=[],elements=[],guide}){
  const pts=section(root,'04｜今回の参考ツボ','東洋医学で伝統的に用いられる候補です。効果が保証された組み合わせではなく、位置図は専門確認まで表示しません。');
  const names=[];
  for(const t of types){const n=TYPE_POINT[t.id];if(n&&!names.includes(n))names.push(n);}
- const en=ELEM_POINT[elem.id];if(en&&!names.includes(en))names.push(en);
+ for(const e of elements){const en=ELEM_POINT[e.id];if(en&&!names.includes(en))names.push(en);}
  for(const name of names.slice(0,3))pointBlock(pts,name,(TYPE_POINT[primary.id]===name?'体質から':'関連する傾向から'));
+ if(!names.length)add(pts,'p','今回の回答に対応するツボを特定できませんでした。');
  add(pts,'p','ツボの正確な位置を確認できない場合は押さないでください。強く押す、長時間押すことは避け、痛み・傷・腫れ・炎症のある部位への刺激は控えましょう。妊娠中や治療中の方は医療者にご相談ください。','tlr-fine');
  const week=section(root,'05｜7日間のセルフケアプラン','一週間で全部やろうとせず、続けられる目標を一つ選んでください。');
  const habits=['休憩する時間を毎日5〜10分予定に入れる','朝か昼の食事を抜かず、就寝時刻を整える','疲れを残さない短い散歩やストレッチをする'];
