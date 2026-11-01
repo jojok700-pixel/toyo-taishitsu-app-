@@ -1,3 +1,4 @@
+import {combinedAdvice} from './constitution-five-link.js';
 import {setupProUI} from './pro-ui.js';
 import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js';
 const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};const allQuestions=[...QUESTIONS,...AXIS_QUESTIONS,...ELEMENT_QUESTIONS];let result=null;let mode='patient';
@@ -46,6 +47,19 @@ function finish(){
  $('fiveList').replaceChildren();
  for(const e of five.ordered){const item=document.createElement('div');item.className='five-item';const head=document.createElement('div');head.className='five-head';const title=document.createElement('strong');title.textContent=`${e.symbol} ${e.label}｜${e.topic}`;const val=document.createElement('span');val.textContent=`${e.score}/3`;head.append(title,val);const track=document.createElement('div');track.className='five-track';const bar=document.createElement('div');bar.style.width=`${e.score/3*100}%`;track.append(bar);const small=document.createElement('small');small.textContent=e.tip;item.append(head,track,small);$('fiveList').append(item);}
  $('fiveSummary').textContent=five.top.length===0?'今回は五行の質問で目立つ回答はありませんでした。':`最近の暮らしで見直したいテーマ：${five.top.map(e=>`${e.label}（${e.topic}）`).join('・')}。複数あれば並列に扱います。`;
+ // 体質と五行を一緒に読む（独立した設問の組合せ。因果や診断を意味しない）
+ let bridge=document.getElementById('constitutionFiveBridge');
+ if(!bridge){bridge=document.createElement('section');bridge.id='constitutionFiveBridge';bridge.className='resultbox';bridge.style.cssText='margin:18px 0;padding:18px;border-radius:16px;border:2px solid #a2bfaa;background:#f2f8ee;color:#233c30;line-height:1.8';$('elementText').closest('.resultbox').before(bridge);}
+ bridge.replaceChildren();
+ const head=document.createElement('h3');head.textContent='🌿 あなたの体質 × 五行 つながるアドバイス';bridge.append(head);
+ const info=document.createElement('p');info.className='fine';info.textContent='五行の点数は「木の力が強い」という意味ではなく、最近の生活で気になっているテーマの強さです。体質との因果関係や病気を判定するものではありません。';bridge.append(info);
+ const selectedTypes=result.ordered.filter(x=>x.score===t.score && x.score>0).slice(0,2);
+ const selectedElements=five.ordered.filter(x=>x.score===five.ordered[0].score && x.score>0).slice(0,2);
+ if(!selectedTypes.length||!selectedElements.length){const p=document.createElement('p');p.textContent='今回の回答では、特定の組み合わせを強調しません。日々の睡眠・食事・休憩のリズムを大切にしてください。';bridge.append(p);}
+ else {
+  for(const ty of selectedTypes)for(const el of selectedElements){const a=combinedAdvice(ty.id,el.id);if(!a)continue;const card=document.createElement('div');card.style.cssText='border-top:1px solid #cadbc9;padding:12px 0';const h=document.createElement('h4');h.textContent=`${ty.name} × ${el.symbol} ${el.label}（${el.topic}）`;const p=document.createElement('p');p.textContent=a.interpretation;const act=document.createElement('p');act.textContent=`今日から：${a.action}`;card.append(h,p,act);bridge.append(card);}
+ }
+
  const selectedCare=(!isTie&&!isZero)?CARE_GUIDES[t.id]:null;
  $('careGrid').replaceChildren();
  const guide=selectedCare||{food:'規則的な食事を心がける。',activity:'体調に合わせて無理なく動く。',rest:'十分な休養をとる。'};
