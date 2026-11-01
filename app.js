@@ -1,7 +1,7 @@
 import {renderFinalReport} from './final-report.js?v=4';
 import {combinedAdvice} from './constitution-five-link.js';
 import {setupProUI} from './pro-ui.js';
-import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js';
+import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js?v=questions-20261102b';
 const $=id=>document.getElementById(id);const values=['まったくない','あまりない','ときどきある','よくある'];let position=0;let answers={};const allQuestions=[...QUESTIONS,...AXIS_QUESTIONS,...ELEMENT_QUESTIONS];let result=null;let mode='patient';
 const picture=id=>`./assets/${id}.png`;
 function setMode(next){mode=next;for(const [id,value] of [['patientMode','patient'],['expertMode','expert']]){$(id).classList.toggle('selected',value===next);$(id).setAttribute('aria-pressed',String(value===next));}$('modeExplain').textContent=next==='expert'?'専門家用の無料学習デモはトップから直接開けます。認証・診断確定は未実装です。':'セルフケアと体質傾向をやさしく紹介します。';}
