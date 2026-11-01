@@ -1,4 +1,4 @@
-import {renderFinalReport} from './final-report.js';
+import {renderFinalReport} from './final-report.js?v=2';
 import {combinedAdvice} from './constitution-five-link.js';
 import {setupProUI} from './pro-ui.js';
 import {QUESTIONS,TYPES,AXIS_QUESTIONS,calculate,calculateAxes,ELEMENTS,ELEMENT_QUESTIONS,calculateElements,CARE_GUIDES} from './data.js';
@@ -68,7 +68,8 @@ function finish(){
  $('careText').textContent=isZero?'無理に体質を決めず、日頃の休養・睡眠・食事を大切にしてください。':isTie?'複数の傾向があります。負担のない軽い運動・規則的な休養など共通する生活習慣から始めましょう。':t.care;
  $('pointName').textContent=isTie||isZero?'ツボ押しは希望に応じて：参考情報のみ':`セルフケアの参考：${t.point}（${t.code}）`;
  $('pointWhere').textContent=isTie||isZero?'同点や根拠が乏しい結果から、特定のツボを推奨しません。':t.where;
- renderFinalReport({type:(!isTie&&!isZero)?t:null,element:five.ordered[0]?.score>0&&five.top.length===1?five.ordered[0]:null,guide});
+ renderFinalReport({types:result.ordered.filter(x=>x.score===t.score&&x.score>0).slice(0,3), elements:five.ordered.filter(x=>x.score===five.ordered[0].score&&x.score>0).slice(0,2), guide});
+ bridge.remove();
  show('result');
 }
 $('start').addEventListener('click',()=>{position=0;answers={};show('quiz');render();});$('back').addEventListener('click',()=>{if(position>0){position--;render();}});$('reset').addEventListener('click',()=>{position=0;answers={};show('intro');});

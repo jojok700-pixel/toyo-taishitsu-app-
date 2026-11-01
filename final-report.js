@@ -26,27 +26,44 @@ const TYPE_THEME={qi:'疲れやすさと活動量',stagnation:'緊張と気分�
 const add=(parent,tag,txt,cls)=>{const el=document.createElement(tag);if(cls)el.className=cls;el.textContent=txt;parent.append(el);return el};
 const section=(root,title,body)=>{const d=document.createElement('div');d.className='tlr-section';add(d,'h3',title);add(d,'p',body);root.append(d);return d};
 const pointBlock=(root,name,role)=>{const [code,tag,desc]=POINTS[name];const wrap=document.createElement('div');wrap.className='tlr-point';add(wrap,'strong',`${name}（${code}）｜${role}`);add(wrap,'p',desc);add(wrap,'small',`分類：${tag}。参考候補であり効果を保証しません。位置図は専門確認まで公開しません。`);root.append(wrap)};
-export function renderFinalReport({type,element,guide}){
+export function renderFinalReport({types=[],elements=[],guide}){
  let root=document.getElementById('toyoFinalReport');
- if(!root){root=document.createElement('section');root.id='toyoFinalReport';root.className='resultbox tlr-wrap';const result=document.getElementById('result');const reset=document.getElementById('reset');result.insertBefore(root,reset);}
- root.replaceChildren();add(root,'div','東洋ケアラボ｜わたしの養生レポート','tlr-overline');add(root,'h2','あなたの身体と、これからの整え方');
- if(!type||!element){section(root,'今回の結果について','特定の体質や五行を一つに絞れない結果でした。無理に型を決めず、食事・睡眠・適度な活動の基本から振り返りましょう。');add(root,'p','このチェックは医療的な診断ではありません。','tlr-fine');return;}
- const pair=combinedAdvice(type.id,element.id);const theme=TYPE_THEME[type.id]||'日々のコンディション';
- add(root,'h3',`${type.name} × ${element.symbol} ${element.label}`);
- add(root,'p',`今回の回答では「${type.name}」の傾向と、五行の「${element.label}」に関連する生活テーマが目立ちました。これは今の身体を決めつけるものではなく、${theme}を見直すための一つの視点です。`);
- section(root,'01｜体質と五行はどうつながる？',`${pair?.interpretation||'いくつかの気がかりが重なっているのかもしれません。'} 五行の点数は「その元素の力が強い」という意味ではありません。独立した質問から、最近の生活で気になることを整理した結果です。`);
- section(root,'02｜今日からの整え方',`${pair?.action||'無理のない生活調整から始めましょう。'} 体調に合わせ、小さく始めて続けられることを大切にしましょう。`);
+ if(!root){root=document.createElement('section');root.id='toyoFinalReport';root.className='resultbox tlr-wrap';}
+ const target=document.getElementById('result');const anchor=document.querySelector('#result .v07-podium')||document.getElementById('reset');target.insertBefore(root,anchor);
+ root.replaceChildren();
+ add(root,'div','東洋ケアラボ｜診断のまとめ','tlr-overline');
+ add(root,'h2','あなたの体質と五行をつなぐ、総合セルフケアレポート');
+ if(!types.length||!elements.length){
+  section(root,'今回の結果の読み方','いくつかの傾向が拮抗しています。無理に一つの体質に決めず、睡眠、食事、体調に合った活動の基本から整えましょう。');
+  section(root,'セルフケアの優先順位','まずは食事を抜かないこと、睡眠を確保すること、疲れが残る日は運動を控えめにすることから。ツボは十分な回答根拠がないため、今回の結果から自動選択しません。');
+  add(root,'p','本レポートは生活習慣を振り返るための参考情報です。医学的診断ではありません。','tlr-fine');return;
+ }
+ const primary=types[0],elem=elements[0],pair=combinedAdvice(primary.id,elem.id);
+ const typeNames=types.map(t=>t.name).join('・'),elemNames=elements.map(e=>e.label).join('・');
+ add(root,'h3',`${typeNames} × ${elemNames}｜今回の養生テーマ`);
+ add(root,'p',`今回の回答では、体質は「${typeNames}」、五行の生活テーマは「${elemNames}」が目立ちました。${types.length>1?'体質が同点なので一つに決めず、共通する養生の方向を読み解きます。':''} 五行は元素の強さや体内のエネルギー量を測った数値ではありません。`);
+ section(root,'01｜今回の結果をどう読む？',`${pair?.interpretation||'日々の負担と休養のバランスを見直すタイミングかもしれません。'} これは質問への回答から考えられる生活上の仮説で、疲労や不調の原因を確定するものではありません。`);
+ if(types.length>1){
+  for(const t of types.slice(1)){const p=combinedAdvice(t.id,elem.id);section(root,`もう一つの傾向｜${t.name}`,`${p?.interpretation||'別の生活テーマも同時に見られます。'} 一方だけを正解と決めず、共通して負担を減らす工夫を優先しましょう。`);}
+ }
+ section(root,'02｜あなたに今、提案したいこと',`${pair?.action||'無理のない生活調整から始めましょう。'} 一気に生活を変える必要はありません。最初は、体調が悪くなる前に休む予定を入れるなど、負担を減らす行動を一つ選びましょう。`);
  const care=guide||{food:'食事の時間を整える。',activity:'無理なく動く。',rest:'睡眠時間を確保する。'};
- const box=section(root,'03｜食事・運動・休養を一緒に整える','特別なことを一度に増やさず、毎日続けやすい順番で試します。');
- for(const [name,txt] of [['🍚 食事',care.food],['🚶 運動',care.activity],['🌙 休養',care.rest]])add(box,'p',`${name}：${txt}`);
- const pts=section(root,'04｜ツボで振り返るセルフケア','東洋医学の伝統的な選穴例から、体質と五行に関連する参考候補を紹介します。ツボ押しは診断や治療の代わりにはなりません。');
- const tp=TYPE_POINT[type.id],ep=ELEM_POINT[element.id];if(tp)pointBlock(pts,tp,'体質から');if(ep&&ep!==tp)pointBlock(pts,ep,'五行から');
- add(pts,'p','指の腹で軽く触れる程度にとどめ、痛みを伴う刺激は避けてください。傷・腫れ・炎症のある場所には行わず、体調が悪くなれば中止。妊娠中は特に自己判断での刺激を避け、持病がある方は専門家に相談してください。','tlr-fine');
- const week=section(root,'05｜これからの7日間','まずは一つの習慣だけを選びましょう。できなかった日があっても問題ありません。');
- const habits=['朝か夜の休憩を5〜10分確保する','食事と就寝時刻を少し整える','体調に合わせて短い散歩をする'];
+ const c=section(root,'03｜食事・運動・休養の3つの整え方','身体の状態は一つの対策だけでは変わりません。食べる・動く・休むのバランスを振り返りましょう。');
+ for(const [name,txt,why] of [['🍚 食事',care.food,'忙しい日に食事が不規則になっていないかを確認。無理なく食べられる形で栄養と水分を補いましょう。'],['🚶 活動',care.activity,'活動は多いほどよいとは限りません。運動の翌日まで疲れが残るなら、時間や強さを減らしましょう。'],['🌙 休養',care.rest,'休む時間を後から捻出するのではなく、最初から予定に入れてみましょう。']]){
+  const p=add(c,'p',`${name}｜${txt}`);p.style.fontWeight='600';add(c,'p',why);
+ }
+ const pts=section(root,'04｜今回の参考ツボ','東洋医学で伝統的に用いられる候補です。効果が保証された組み合わせではなく、位置図は専門確認まで表示しません。');
+ const names=[];
+ for(const t of types){const n=TYPE_POINT[t.id];if(n&&!names.includes(n))names.push(n);}
+ const en=ELEM_POINT[elem.id];if(en&&!names.includes(en))names.push(en);
+ for(const name of names.slice(0,3))pointBlock(pts,name,(TYPE_POINT[primary.id]===name?'体質から':'関連する傾向から'));
+ add(pts,'p','ツボの正確な位置を確認できない場合は押さないでください。強く押す、長時間押すことは避け、痛み・傷・腫れ・炎症のある部位への刺激は控えましょう。妊娠中や治療中の方は医療者にご相談ください。','tlr-fine');
+ const week=section(root,'05｜7日間のセルフケアプラン','一週間で全部やろうとせず、続けられる目標を一つ選んでください。');
+ const habits=['休憩する時間を毎日5〜10分予定に入れる','朝か昼の食事を抜かず、就寝時刻を整える','疲れを残さない短い散歩やストレッチをする'];
  const sel=document.createElement('select');sel.setAttribute('aria-label','7日間の目標を選択');for(const h of habits){const o=document.createElement('option');o.value=o.textContent=h;sel.append(o);}week.append(sel);
- const btn=document.createElement('button');btn.type='button';btn.textContent='選んだ目標をコピー';btn.className='secondary';btn.addEventListener('click',()=>navigator.clipboard?.writeText(`東洋ケアラボ 7日間の目標：${sel.value}`).then(()=>{btn.textContent='コピーしました'}).catch(()=>{btn.textContent='コピーできませんでした'}));week.append(btn);
- section(root,'06｜最後に','診断結果は「こういう体質だから仕方がない」という結論ではありません。今の生活を少しだけ違う角度から見つめ、負担を減らして、自分のペースを取り戻すためのヒントです。できることを一つ選ぶ。それが、今日から始める養生です。');
- add(root,'p','この内容は東洋医学の考え方に基づく一般的な情報です。病名・原因・体質の確定、治療効果の保証はできません。症状が続く・悪化する、強い痛み・胸痛・息苦しさ・失神などがあるときは医療機関にご相談ください。','tlr-fine');
+ const chosen=add(week,'p',`今週の目標：${habits[0]}`);sel.addEventListener('change',()=>chosen.textContent=`今週の目標：${sel.value}`);
+ const btn=document.createElement('button');btn.type='button';btn.textContent='目標をコピー';btn.className='secondary';btn.addEventListener('click',()=>{if(!navigator.clipboard?.writeText){btn.textContent='お使いの環境ではコピーできません';return;}navigator.clipboard.writeText(`東洋ケアラボ｜今週の目標：${sel.value}`).then(()=>{btn.textContent='コピーしました'}).catch(()=>{btn.textContent='コピーできませんでした'});});week.append(btn);
+ section(root,'06｜あなたへの最後のメッセージ',`今回目立った「${typeNames}」と「${elemNames}」は、あなたの限界や性格を決めるラベルではありません。 今の生活の中で、どこに力を使い、どこで力を回復するかを考える手がかりです。まず一つ、休む・食べる・動くのバランスを自分で選び直してみてください。`);
+ add(root,'p','このチェックは病気や体質を確定する診断ではありません。疲れや立ちくらみなどが続く場合は医療機関へ。胸痛、息苦しさ、失神などの危険徴候があれば速やかに医療につなげてください。','tlr-fine');
 }
 export const pointCatalog=POINTS;
