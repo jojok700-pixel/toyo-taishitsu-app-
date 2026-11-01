@@ -65,7 +65,16 @@ export function renderFinalReport({types=[],elements=[],guide,lowEvidence=false}
  const sel=document.createElement('select');sel.setAttribute('aria-label','7日間の目標を選択');for(const h of habits){const o=document.createElement('option');o.value=o.textContent=h;sel.append(o);}week.append(sel);
  const chosen=add(week,'p',`今週の目標：${habits[0]}`);sel.addEventListener('change',()=>chosen.textContent=`今週の目標：${sel.value}`);
  const btn=document.createElement('button');btn.type='button';btn.textContent='目標をコピー';btn.className='secondary';btn.addEventListener('click',()=>{if(!navigator.clipboard?.writeText){btn.textContent='お使いの環境ではコピーできません';return;}navigator.clipboard.writeText(`東洋ケアラボ｜今週の目標：${sel.value}`).then(()=>{btn.textContent='コピーしました'}).catch(()=>{btn.textContent='コピーできませんでした'});});week.append(btn);
- section(root,'06｜あなたへの最後のメッセージ',`今回目立った「${typeNames}」と「${elemNames}」は、あなたの限界や性格を決めるラベルではありません。 今の生活の中で、どこに力を使い、どこで力を回復するかを考える手がかりです。まず一つ、休む・食べる・動くのバランスを自分で選び直してみてください。`);
+ const synthesis=section(root,'06｜あなたの生活に結びつける総合アドバイス',`今回の中心は「${typeNames}」と「${elemNames}」の組み合わせです。${pair?.interpretation||'日常の負担と回復のバランスが気になります。'} ここで大切なのは体質名を決めつけることではなく、今日の暮らしのどこで無理が生じているかを見つけることです。`);
+ add(synthesis,'h4','まず振り返ってほしい3つの場面');
+ add(synthesis,'p',`朝：目覚めたときに疲れが残っていないでしょうか。${care.food} 食事を抜きやすい日は、用意しやすい食事から整えましょう。`);
+ add(synthesis,'p',`昼：仕事・家事・移動の合間に休息が取れているでしょうか。${care.activity} 疲れが重なる日は運動量よりも回復を優先してください。`);
+ add(synthesis,'p',`夜：寝る直前まで予定や考え事が続いていないでしょうか。${care.rest} 翌朝の調子を一週間見比べると、自分に合うペースを見つけやすくなります。`);
+ add(synthesis,'h4','今回のツボをどう取り入れる？');
+ add(synthesis,'p',`上の「参考ツボ」は${typeNames}と${elemNames}の養生テーマから選んだ候補です。ツボ押しを必須にせず、負担の少ない休養・食事・運動を基本に、関心のある方が補助的に活用してください。`);
+ add(synthesis,'h4','最初の一週間の目安');
+ add(synthesis,'p',`今週は目標を一つだけ選び、できた日を数えてみましょう。完璧に続けることより「どんな日に疲れやすいか」「何をすると楽に過ごせるか」に気づくことが、次のセルフケアにつながります。`);
+ section(root,'07｜あなたへの最後のメッセージ',`今回目立った「${typeNames}」と「${elemNames}」は、あなたの限界や性格を決めるラベルではありません。 今の生活の中で、どこに力を使い、どこで力を回復するかを考える手がかりです。まず一つ、休む・食べる・動くのバランスを自分で選び直してみてください。`);
  add(root,'p','このチェックは病気や体質を確定する診断ではありません。疲れや立ちくらみなどが続く場合は医療機関へ。胸痛、息苦しさ、失神などの危険徴候があれば速やかに医療につなげてください。','tlr-fine');
 }
 export const pointCatalog=POINTS;
