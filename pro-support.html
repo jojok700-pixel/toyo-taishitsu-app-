@@ -3,7 +3,7 @@
 
 .result-hero{display:flex;gap:14px;align-items:center;margin:12px 0;padding:12px;background:#eff6ec;border-radius:16px}.result-hero .mascot-visual{width:132px;height:132px;flex-shrink:0;overflow:hidden;border-radius:14px}.result-hero img{display:block;width:100%;height:100%;object-fit:cover}.result-hero h3{font-size:21px;margin:0 0 6px}.result-hero p{margin:0;font-size:14px;line-height:1.6}.result-main{border:2px solid #7ca38a;background:#f9fcf7}.result-reason{background:#fff;padding:12px;border-radius:12px;margin-top:10px;border:1px solid #d9e5d9}.result-reason strong{display:block;margin-bottom:7px}.result-reason p{margin:4px 0;line-height:1.6}.result-caveat{background:#fff4df;border-radius:10px;padding:9px 11px;margin:9px 0;font-size:13px;line-height:1.6}.status-line{font-size:13px;color:#566a5b;margin-top:6px}.result-small{font-size:13px;line-height:1.6}
 @media(max-width:420px){.result-hero .mascot-visual{width:112px;height:112px}.result-hero h3{font-size:19px}}
-.result-story{font-size:15px;line-height:1.7;color:#46614f;margin:8px 0}.result-reason p{line-height:1.7} </style></head><body><header><a href="./index.html" style="color:white">← 一般向け25問診断</a><h1>東洋ケアラボ｜弁証サポート</h1><div>症状 → 八綱 → 五臓 → 弁証候補</div></header><main><section><h2>3つの入力で候補を整理</h2><p class="hint">鍼灸師向けの所見整理です。患者氏名などは入力しないでください。入力はブラウザ内でのみ処理します。</p><div class="warning">強い胸痛・呼吸困難・意識障害・突然の麻痺・激しい腹痛などは、弁証より緊急対応を優先してください。</div></section>
+.result-story{font-size:15px;line-height:1.7;color:#46614f;margin:8px 0}.result-reason p{line-height:1.7}  .reading-pair{display:inline-flex;flex-direction:column;vertical-align:middle;align-items:flex-start;margin-right:3px;line-height:1.3}.reading-kanji{font-size:1em}.reading-kana{font-size:.65em;color:#526b58;font-weight:500;letter-spacing:.02em;margin-top:3px}.reading-separator{padding:0 2px}.reading-note{font-size:.7em;color:#526b58;font-weight:400} </style></head><body><header><a href="./index.html" style="color:white">← 一般向け25問診断</a><h1>東洋ケアラボ｜弁証サポート</h1><div>症状 → 八綱 → 五臓 → 弁証候補</div></header><main><section><h2>3つの入力で候補を整理</h2><p class="hint">鍼灸師向けの所見整理です。患者氏名などは入力しないでください。入力はブラウザ内でのみ処理します。</p><div class="warning">強い胸痛・呼吸困難・意識障害・突然の麻痺・激しい腹痛などは、弁証より緊急対応を優先してください。</div></section>
 <section><h2>① 症状を選択</h2><p class="hint">主な症状を3〜6個程度選択してください。</p><div class="chips" id="symptoms"></div></section>
 <section><h2>② 八綱弁証を選択</h2><p class="hint">施術者の見立てを入力します。決められない場合は「未確認」で進められます。</p><label class="field">表・裏</label><select id="location"><option value="">未確認</option><option>表</option><option>裏</option><option>表裏とも</option></select><label class="field">寒・熱</label><select id="temperature"><option value="">未確認</option><option>寒</option><option>熱</option><option>寒熱錯雑</option></select><label class="field">虚・実</label><select id="strength"><option value="">未確認</option><option>虚</option><option>実</option><option>虚実錯雑</option></select><label class="field">陰・陽（総括）</label><select id="yinYang"><option value="">未確認</option><option>陰</option><option>陽</option><option>陰陽錯雑</option></select><p class="hint">陰陽は寒熱・虚実等を総合した整理で、単独の症状だけでは決めません。</p></section>
 <section><h2>③ 五臓の所見を選択</h2><p class="hint">関連が考えられる臓を選びます。複数選択可。臓名は現代医学の臓器診断ではありません。</p><div class="choice" id="organs"></div><label class="field">舌の所見（任意）</label><select id="tongue"><option value="">未確認</option><option value="pale">淡舌・胖大傾向</option><option value="red">紅舌・少苔傾向</option><option value="purple">暗紫・瘀点傾向</option><option value="greasy">膩苔傾向</option><option value="other">その他</option></select><label class="field">脈の所見（任意）</label><select id="pulse"><option value="">未確認</option><option value="weak">細・弱傾向</option><option value="slow">沈・遅傾向</option><option value="wiry">弦傾向</option><option value="rapid">数傾向</option><option value="slippery">滑傾向</option><option value="other">その他</option></select><button class="button" id="submit">弁証候補を表示する</button></section>
@@ -105,6 +105,110 @@ function mascotSvg(name){const m=mascots[name]||mascots['脾気虚'];const ears=
 const characterStories={"気虚":"元気を配り続けた白狐","気滞":"思いを胸にしまった緑狐","気逆":"空へ急ぎすぎた小龍","気陥":"荷物を支え続けた兎","血虚":"みんなを照らした花兎","血瘀":"足を止めた赤狐","血熱":"熱い想いの火鳥","津液不足":"泉を探す水兎","痰湿":"池に長居した狸","湿熱":"熱い沼の蛙","肝鬱気滞":"期待に応え続けた葉の狐","肝火上炎":"炎を抑え続けた赤狐","肝陽上亢":"頂を目指した風の鹿","肝血虚":"花園を守った鹿","肝陰虚":"月夜に休まぬ緑兎","肝風内動":"嵐に巻き込まれた龍","肝脾不和":"狐と狸のすれ違い","肝胃不和":"想いを抱えた狐","心気虚":"灯を守る小兎","心陽虚":"寒い夜の灯籠猫","心血虚":"みんなを心配した花兎","心陰虚":"月と炎の猫","心火亢盛":"炎を背負った火鳥","痰火擾心":"煙に迷った小龍","脾気虚":"食事を後回しにした狸","脾陽虚":"寒空の台所に立つ狸","中気下陥":"実りを支えた小熊","脾不統血":"赤い雫を守った狸","胃熱":"火を吹いた小虎","胃陰虚":"水差しを抱えた猫","食滞":"宴の後に眠る熊","肺気虚":"風を守った白フクロウ","肺陰虚":"乾いた夜空の白鳥","肺熱壅盛":"炎の雲の白虎","風寒束肺":"雪原を旅した白狐","風熱犯肺":"春風に吹かれた小鳥","痰湿阻肺":"霧の中の白熊","腎気虚":"水晶を守った狼","腎陽虚":"焚き火を求めた亀","腎陰虚":"休まず星を追った銀狼","腎精不足":"星の宝珠を守った狼","腎不納気":"雲を追いかける亀","腎気不固":"水瓶を守る亀","腎陰陽両虚":"月と太陽を抱えた狼","心脾両虚":"兎と狸の二人旅","気血両虚":"白狐と花兎の旅","心腎不交":"炎と水の双龍","脾腎陽虚":"冬の台所の狸と亀","肝腎陰虚":"月夜の狐と狼","気滞血瘀":"緑と赤の渦にいる狐"};
 const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const val=id=>document.getElementById(id).value;
+
+// 伝統的選穴の教育用候補。治療手順・刺鍼部位図ではない。
+const pointGuides={
+ '脾気虚':{main:[['足三里','ST36','胃腸と気の働きを補う伝統的選穴'],['太白','SP3','脾の原穴として運化を考える']],add:[['脾兪','BL20','背部兪穴を用いる考え方']],note:'脾陽虚との鑑別には冷え・便性状・温めた際の変化を確認。'},
+ '脾陽虚':{main:[['足三里','ST36','脾胃の働きを整える'],['太白','SP3','脾の虚を考慮する']],add:[['関元','CV4','虚寒の背景を考える参考穴']],note:'温法・灸などは禁忌や熱傷リスクを個別確認。'},
+ '肝鬱気滞':{main:[['太衝','LR3','肝経の気機の調整を意図'],['内関','PC6','胸部・情志に関連する伝統的配穴']],add:[['陽陵泉','GB34','筋緊張などを伴う場合の比較候補']],note:'胸部症状の危険徴候を除外し、肝火・肝胃不和との鑑別を優先。'},
+ '肝火上炎':{main:[['行間','LR2','肝経の熱に関連する伝統的選穴'],['太衝','LR3','肝経の気機の調整を意図']],add:[['曲池','LI11','熱徴候への伝統的配穴']],note:'新規の激しい頭痛、神経症状、眼痛等は医療評価を優先。'},
+ '気血両虚':{main:[['足三里','ST36','気の虚に対する伝統的選穴'],['三陰交','SP6','三陰経の関連から血の滋養を考える']],add:[['血海','SP10','血に関連する伝統的配穴']],note:'出血、貧血、循環器疾患等の評価を必要に応じて先行。'},
+ '血虚':{main:[['三陰交','SP6','血の滋養を考える伝統的選穴'],['血海','SP10','血に関連する伝統的選穴']],add:[['足三里','ST36','飲食物からの気血生成を考える']],note:'月経・出血・栄養状態、舌・脈の確認が必要。'},
+ '腎陰虚':{main:[['太渓','KI3','腎経の原穴を用い陰の不足を考える'],['照海','KI6','腎陰に関連する伝統的選穴']],add:[['三陰交','SP6','陰の不足を考える配穴']],note:'寝汗、口渇、熱感の背景に別の疾患がないか確認。'},
+ '腎陽虚':{main:[['太渓','KI3','腎の不足を考える基本候補'],['関元','CV4','虚寒に対する伝統的配穴']],add:[['腎兪','BL23','背部兪穴を参考として検討']],note:'浮腫や排尿変化には内科的評価が必要な場合がある。'},
+ '肺気虚':{main:[['太淵','LU9','肺経の原穴・兪土穴として肺気を考える'],['足三里','ST36','気の不足を考える配穴']],add:[['列欠','LU7','肺経の絡穴を用いる参考候補']],note:'息切れ・胸痛・低酸素が疑われる場合は医療対応を優先。'},
+ '痰湿':{main:[['豊隆','ST40','痰湿に対する伝統的選穴'],['陰陵泉','SP9','水湿の停滞を考える']],add:[['中脘','CV12','胃部症状がある際の参考穴']],note:'浮腫・呼吸症状の原因疾患も必ず評価。'}
+};
+const groupPointGuides={
+ '肝':[['太衝','LR3','肝経の気機を考える'],['陽陵泉','GB34','筋・胆経の関連を考える']],
+ '心':[['神門','HT7','心神に関する伝統的選穴'],['内関','PC6','心包経・胸部症状を考える']],
+ '脾':[['足三里','ST36','脾胃の運化を考える'],['太白','SP3','脾経の原穴を考える']],
+ '胃':[['足三里','ST36','胃の働きを考える'],['中脘','CV12','胃部症状に関連する参考穴']],
+ '肺':[['太淵','LU9','肺経の原穴を考える'],['列欠','LU7','肺経の絡穴を考える']],
+ '腎':[['太渓','KI3','腎経の原穴を考える'],['復溜','KI7','腎経の経金穴を考える']],
+ '気血津液':[['足三里','ST36','気血生成に関する参考穴'],['三陰交','SP6','血・陰に関する参考穴']],
+ '複合':[['足三里','ST36','虚実の見極めを前提とした参考穴'],['内関','PC6','関連症状に応じて比較する参考穴']]
+};
+function pointsForPattern(p){
+ if(pointGuides[p.name])return {...pointGuides[p.name],reviewed:false};
+ const k=['肝','心','脾','胃','肺','腎'].find(x=>p.name.includes(x))||(p.kind.includes('気血')?'気血津液':'複合');
+ return {main:groupPointGuides[k],add:[],note:'この証に固有の選穴セットは未精査です。証の寒熱・虚実・兼証と局所所見を確認して再選穴してください。',generic:true};
+}
+// 治法は東洋医学の伝統的な弁証論治の参考。臨床的な確定処方ではない。
+const treatmentMethods={
+'気虚':['益気補気','気の不足の部位と原因を確認し、補気の方向性を考える。'],
+'気滞':['理気行気','気機の鬱滞を緩める。肝鬱が中心なら疏肝理気を検討。'],
+'気逆':['降逆理気','肺・胃など気逆の起点を確かめる。'],
+'気陥':['益気昇提','中気下陥など下陥の原因と虚証を評価する。'],
+'血虚':['養血補血','血虚の背景と兼証を確認する。'],
+'血瘀':['活血化瘀','出血傾向・抗凝固薬などを必ず確認。'],
+'血熱':['清熱涼血','出血や発熱の医学的評価を優先。'],
+'津液不足':['生津潤燥','脱水・服薬などの要因も確認。'],
+'痰湿':['燥湿化痰','湿の成因と熱・寒の兼証で治法を調整。'],
+'湿熱':['清熱利湿','熱と湿が重なる部位の所見を確認。'],
+'肝鬱気滞':['疏肝理気','肝の疏泄失調による気機鬱滞を整える。火化・血瘀・脾胃への影響があれば治法を再検討。'],
+'肝火上炎':['清肝瀉火','実熱の上炎所見を確認。肝陽上亢と鑑別。'],
+'肝陽上亢':['平肝潜陽','肝腎陰虚など本虚の有無を評価する。'],
+'肝血虚':['養血柔肝','血虚に伴う目・筋の所見を確認。'],
+'肝陰虚':['滋陰養肝','虚熱の有無に応じて調整。'],
+'肝風内動':['平肝熄風（病機別に検討）','熱極・陰虚・血虚など原因で治法が異なる。急性の神経症状は緊急評価。'],
+'肝脾不和':['疏肝健脾','気滞と脾虚の比重を確認。'],
+'肝胃不和':['疏肝和胃','胃気上逆の有無を確認し必要なら降逆を考える。'],
+'心気虚':['益気養心','動悸・息切れは心疾患の確認も必要。'],
+'心陽虚':['温補心陽','胸痛・呼吸苦・循環不全の徴候には医学的対応を優先。'],
+'心血虚':['養血安神','血虚と心神不寧の所見を確認。'],
+'心陰虚':['滋陰養心','虚熱・不眠の所見を確認。'],
+'心火亢盛':['清心瀉火','実熱所見と陰虚火旺を鑑別。'],
+'痰火擾心':['清熱化痰・寧心安神','急な意識・精神状態の変化は医学的評価を優先。'],
+'脾気虚':['健脾益気','運化失調・疲労・軟便を確認。'],
+'脾陽虚':['温中健脾','冷え・虚寒の所見を確認。'],
+'中気下陥':['補中益気・昇陽挙陥','脾気虚と下陥所見の両方を確認。'],
+'脾不統血':['益気健脾・摂血','出血の原因を医学的に評価する。'],
+'胃熱':['清胃瀉熱','実熱と胃陰虚を鑑別。'],
+'胃陰虚':['養陰益胃','乾燥と胃部症状を確認。'],
+'食滞':['消食導滞','消化器疾患や急性腹症を除外。'],
+'肺気虚':['補益肺気','息切れ・咳の医学的原因も検討。'],
+'肺陰虚':['養陰潤肺','虚熱・乾性咳嗽を確認。'],
+'肺熱壅盛':['清瀉肺熱','発熱・呼吸苦は適切な医療評価を優先。'],
+'風寒束肺':['疏風散寒・宣肺','外感風寒の所見を確認。'],
+'風熱犯肺':['疏風清熱・宣肺','感染症の可能性も確認。'],
+'痰湿阻肺':['燥湿化痰・宣肺','喀痰・呼吸困難の原因評価が必要。'],
+'腎気虚':['補益腎気','冷え・ほてりの有無で陽虚・陰虚を鑑別。'],
+'腎陽虚':['温補腎陽','浮腫・排尿症状の医学的評価も考える。'],
+'腎陰虚':['滋陰補腎','虚熱を伴う場合は滋陰降火も検討。'],
+'腎精不足':['補腎填精','腎気虚との違いと全身所見を確認。'],
+'腎不納気':['補腎納気','呼吸苦には呼吸器・循環器の評価を優先。'],
+'腎気不固':['補腎固摂','排尿異常の医学的評価を忘れない。'],
+'腎陰陽両虚':['陰陽双補（偏りを個別判断）','虚寒・虚熱の両所見を確認。'],
+'心脾両虚':['補益心脾・養血安神','気血不足と食欲・睡眠所見を確認。'],
+'気血両虚':['益気養血','気虚と血虚が併存するか確認。'],
+'心腎不交':['交通心腎・滋陰降火','心火と腎陰不足の所見を確認。'],
+'脾腎陽虚':['温補脾腎','冷え・軟便・腰膝症状を確認。'],
+'肝腎陰虚':['滋補肝腎','虚熱・乾燥・腰膝や目の症状を確認。'],
+'気滞血瘀':['理気活血・化瘀通絡','気滞と瘀血の双方の所見、出血リスクを確認。']
+};
+
+const patternReadings={"気虚": "ききょ", "気滞": "きたい", "気逆": "きぎゃく", "気陥": "きかん", "血虚": "けっきょ", "血瘀": "けつお", "血熱": "けつねつ", "津液不足": "しんえきぶそく", "痰湿": "たんしつ", "湿熱": "しつねつ", "肝鬱気滞": "かんうつきたい", "肝火上炎": "かんかじょうえん", "肝陽上亢": "かんようじょうこう", "肝血虚": "かんけっきょ", "肝陰虚": "かんいんきょ", "肝風内動": "かんぷうないどう", "肝脾不和": "かんぴふわ", "肝胃不和": "かんいふわ", "心気虚": "しんききょ", "心陽虚": "しんようきょ", "心血虚": "しんけっきょ", "心陰虚": "しんいんきょ", "心火亢盛": "しんかこうせい", "痰火擾心": "たんかじょうしん", "脾気虚": "ひききょ", "脾陽虚": "ひようきょ", "中気下陥": "ちゅうきげかん", "脾不統血": "ひふとうけつ", "胃熱": "いねつ", "胃陰虚": "いいんきょ", "食滞": "しょくたい", "肺気虚": "はいききょ", "肺陰虚": "はいいんきょ", "肺熱壅盛": "はいねつようせい", "風寒束肺": "ふうかんそくはい", "風熱犯肺": "ふうねつはんはい", "痰湿阻肺": "たんしつそはい", "腎気虚": "じんききょ", "腎陽虚": "じんようきょ", "腎陰虚": "じんいんきょ", "腎精不足": "じんせいぶそく", "腎不納気": "じんふのうき", "腎気不固": "じんきふこ", "腎陰陽両虚": "じんいんようりょうきょ", "心脾両虚": "しんぴりょうきょ", "気血両虚": "きけつりょうきょ", "心腎不交": "しんじんふこう", "脾腎陽虚": "ひじんようきょ", "肝腎陰虚": "かんじんいんきょ", "気滞血瘀": "きたいけつお"};
+const methodReadings={"益気補気": "えっきほき", "理気行気": "りきこうき", "降逆理気": "こうぎゃくりき", "益気昇提": "えっきしょうてい", "養血補血": "ようけつほけつ", "活血化瘀": "かっけつかお", "清熱涼血": "せいねつりょうけつ", "生津潤燥": "せいしんじゅんそう", "燥湿化痰": "そうしつかたん", "清熱利湿": "せいねつりしつ", "疏肝理気": "そかんりき", "清肝瀉火": "せいかんしゃか", "平肝潜陽": "へいかんせんよう", "養血柔肝": "ようけつじゅうかん", "滋陰養肝": "じいんようかん", "平肝熄風": "へいかんそくふう", "疏肝健脾": "そかんけんぴ", "疏肝和胃": "そかんわい", "益気養心": "えっきようしん", "温補心陽": "おんぽしんよう", "養血安神": "ようけつあんしん", "滋陰養心": "じいんようしん", "清心瀉火": "せいしんしゃか", "清熱化痰": "せいねつかたん", "寧心安神": "ねいしんあんしん", "健脾益気": "けんぴえっき", "温中健脾": "おんちゅうけんぴ", "補中益気": "ほちゅうえっき", "昇陽挙陥": "しょうようきょかん", "益気健脾": "えっきけんぴ", "摂血": "せっけつ", "清胃瀉熱": "せいいしゃねつ", "養陰益胃": "よういんえきい", "消食導滞": "しょうしょくどうたい", "補益肺気": "ほえきはいき", "養陰潤肺": "よういんじゅんぱい", "清瀉肺熱": "せいしゃはいねつ", "疏風散寒": "そふうさんかん", "宣肺": "せんぱい", "疏風清熱": "そふうせいねつ", "補益腎気": "ほえきじんき", "温補腎陽": "おんぽじんよう", "滋陰補腎": "じいんほじん", "補腎填精": "ほじんてんせい", "補腎納気": "ほじんのうき", "補腎固摂": "ほじんこせつ", "陰陽双補": "いんようそうほ", "補益心脾": "ほえきしんぴ", "益気養血": "えっきようけつ", "交通心腎": "こうつうしんじん", "滋陰降火": "じいんこうか", "温補脾腎": "おんぽひじん", "滋補肝腎": "じほかんじん", "理気活血": "りきかっけつ", "化瘀通絡": "かおつうらく"};
+function renderReading(label,reading){return `<span class="reading-pair"><span class="reading-kanji">${safe(label)}</span><span class="reading-kana">${safe(reading||'読み確認中')}</span></span>`;}
+function renderMethodReading(label){return label.split('・').map(segment=>{const match=segment.match(/^([^（]+)(.*)$/);if(!match)return safe(segment);return renderReading(match[1],methodReadings[match[1]])+(match[2]?`<span class="reading-note">${safe(match[2])}</span>`:'')}).join('<span class="reading-separator">・</span>');}
+
+function renderTreatment(p){
+ const t=treatmentMethods[p.name];
+ if(!t)return `<div class="result-reason"><strong>治法（要個別検討）</strong><p>この証の治法データは未精査です。病機・兼証を確認してください。</p></div>`;
+ return `<div class="result-reason" style="border-left:4px solid #58906b"><strong>治法（伝統的な参考方針）</strong><p style="font-weight:700;font-size:19px">${renderMethodReading(t[0])}</p><p>${safe(t[1])}</p><p class="hint">八綱・兼証・経過により治法は変わります。ここに示す内容は自動確定した治療方針ではありません。</p></div>`;
+}
+function renderPointGuides(p){
+ const g=pointsForPattern(p);
+ const item=(a)=>`<li><strong>${safe(a[0])}（${safe(a[1])}）</strong>：${safe(a[2])}</li>`;
+ return `<details class="result-reason" style="margin-top:16px" open><summary><strong>参考選穴：主穴・配穴と理由</strong></summary>
+ <p class="hint">${g.generic?'臓腑分類からの暫定候補。個別の証に対する正式な選穴ではありません。':'伝統理論に基づく参考候補。医学的な効果や処方の妥当性は個別検証が必要です。'}</p>
+ <strong>主穴の候補</strong><ul>${g.main.map(item).join('')}</ul>
+ ${g.add.length?`<strong>配穴候補</strong><ul>${g.add.map(item).join('')}</ul>`:''}
+ <p><strong>臨床で追加確認：</strong>${safe(g.note)}</p>
+ <p class="hint">部位図・刺鍼手技・深度は掲載していません。解剖学的安全性、禁忌、患者の状態を施術者が確認してください。診断と治療方針を自動確定する機能ではありません。</p></details>`;
+}
+
 function analyze(){if(!symptoms.size){alert('症状を1つ以上選んでください');return}const organs=[...os.querySelectorAll('input:checked')].map(n=>n.value);const input={location:val('location'),temperature:val('temperature'),strength:val('strength'),yinYang:val('yinYang'),tongue:val('tongue'),pulse:val('pulse')};
 const ranked=patterns.map(p=>{const matches=p.tags.filter(s=>symptoms.has(s));const om=(whichOrgan[p.name]||[]).filter(o=>organs.includes(o));const am=[],contrad=[];for(const key of ['location','temperature','strength']){let chosen=input[key],expect=axes[p.name]?.[key];if(chosen&&expect){if(chosen===expect)am.push(key==='location'?'表裏':key==='temperature'?'寒熱':'虚実');else if(!chosen.includes('錯雑')&&chosen!=='表裏とも')contrad.push(key==='location'?'表裏':key==='temperature'?'寒熱':'虚実')}}const tp=[];for(let key of ['tongue','pulse'])if(input[key]&&tPulse[p.name]?.[key]?.includes(input[key]))tp.push(key==='tongue'?'舌':'脈');return {...p,matches,om,am,contrad,tp,score:matches.length*2+om.length*2+am.length+tp.length-contrad.length*2}}).filter(p=>p.matches.length>0).sort((a,b)=>b.score-a.score).slice(0,3);
 let target=document.getElementById('resultCards');target.innerHTML='';
@@ -117,11 +221,13 @@ ranked.forEach((p,i)=>{
  const tonguePulse=p.tp.length?`舌脈：${safe(p.tp.join('・'))}の参考所見が一致`:'舌脈：一致を確認できていません';
  const image=characterImages[p.name]?`<img loading="lazy" src="./${characterImages[p.name]}?v=26" alt="${safe(p.name)}の仮キャラクター">`:`<span class="hint">対応画像がありません</span>`;
  const story=characterStories[p.name]||'この証の物語は準備中です。';
- div.innerHTML=`<div class="result-hero"><div class="mascot-visual">${image}</div><div><div class="status-line">${i+1}番目の参考候補 ／ ${safe(status)}</div><h3>${safe(p.name)}</h3><p class="result-story">${safe(story)}</p></div></div>
+ div.innerHTML=`<div class="result-hero"><div class="mascot-visual">${image}</div><div><div class="status-line">${i+1}番目の参考候補 ／ ${safe(status)}</div><h3>${renderReading(p.name,patternReadings[p.name])}</h3><p class="result-story">${safe(story)}</p></div></div>
  <div class="result-reason"><strong>入力から確認できた根拠</strong><p>${mainText}</p><p>${organText}</p><p>${axisText}</p><p>${tonguePulse}</p></div>
  ${p.contrad.length?`<p class="result-caveat">入力した八綱と合わない点：${safe(p.contrad.join('・'))}。所見や別の証を再検討してください。</p>`:''}
  <div class="result-reason"><strong>似た証との鑑別</strong><p>${safe(p.contrast)}</p></div>
  <div class="result-reason"><strong>次に確認する所見</strong><p>${safe(p.check)}</p></div>
+ ${renderTreatment(p)}
+ ${renderPointGuides(p)}
  <p class="result-small">キャラクターの物語は学習用の創作であり、症状の原因や証を示す証拠ではありません。 ${safe(p.evidenceLevel||'参考所見による照合')}。順位は入力との簡易一致であり、診断の確度を示しません。</p>
  <a href="./zukan.html?name=${encodeURIComponent(p.name)}">${safe(p.name)}のキャラクター図鑑を見る →</a>`;
  target.append(div);
