@@ -19,10 +19,19 @@ function finish(){
  const best=result.ordered.filter(x=>x.score===t.score);
  const isTie=best.length>1;
  const isZero=t.score===0;
+ // 中庸は全項目が低い場合に限る。均等に高い回答は調和と区別する。
+ const constitutionCalm=result.ordered.every(x=>x.score<=2);
+ const elementCalm=five.ordered.every(x=>x.score<=1);
+ const elementBroad=five.ordered.every(x=>x.score>=2);
+ const overallCalm=constitutionCalm&&elementCalm;
+
  $('tieGallery').replaceChildren();
- $('tieGallery').classList.toggle('hidden',!isTie||isZero);
- $('singleHero').classList.toggle('hidden',isTie||isZero);
- if(isZero){
+ $('tieGallery').classList.toggle('hidden',!isTie||isZero||constitutionCalm);
+ $('singleHero').classList.toggle('hidden',isTie||isZero||constitutionCalm);
+ if(constitutionCalm){
+   $('resultStatus').textContent='8つの体質について強く目立つ回答が少なく、今回は中庸に近い傾向です。体質がない・健康を保証するという意味ではありません。';
+   $('resultTitle').textContent='中庸・バランス傾向';
+ }else if(isZero){
    $('resultStatus').textContent='今回の回答では8体質の質問すべてが「まったくない」でした。特定の傾向を示す根拠はありません。';
    $('resultTitle').textContent='目立つ傾向はありません';
  }else if(isTie){
@@ -37,7 +46,7 @@ function finish(){
  $('resultMascot').alt=`${t.name}のキャラクター`;
  $('resultLead').textContent=`${t.desc}が相対的に目立ちました。これは質問への回答を単純集計した結果で、医学的な診断ではありません。`;
  const others=result.ordered.filter(x=>x.score>0&&!best.some(b=>b.id===x.id)).slice(0,3);
- $('secondaryText').textContent=isZero?'今回の回答では、目立った傾向を確認できませんでした。':others.length?others.map(x=>`${x.name}（${x.score}/6）`).join('、')+'。複数の傾向が重なることもあります。':'すべての体質が同点です。';
+ $('secondaryText').textContent=constitutionCalm?'各体質の得点が低く、今回の回答では大きな偏りが目立ちません。':isZero?'今回の回答では、目立った傾向を確認できませんでした。':others.length?others.map(x=>`${x.name}（${x.score}/6）`).join('、')+'。複数の傾向が重なることもあります。':'すべての体質が同点です。';
  $('podium').replaceChildren();
  const leading=result.ordered.filter(x=>x.score>0).slice(0,3);
  leading.forEach((x,i)=>{const card=document.createElement('div');card.className='podium-card';if(i===0)card.classList.add('first');const img=document.createElement('img');img.src=picture(x.id);img.alt=`${x.name}キャラクター`;img.loading='lazy';const caption=document.createElement('div');caption.className='podium-caption';const label=document.createElement('strong');label.textContent=`${x.name} · ${x.score}/6`;const rank=document.createElement('small');rank.textContent=`${result.ordered.filter(y=>y.score>x.score).length+1}位`;caption.append(rank,label);card.append(img,caption);$('podium').append(card);});
@@ -47,7 +56,7 @@ function finish(){
  $('elementText').textContent='五行は独立した5問で、最近の生活上の気がかりを見える化しています。五臓の病気・証・性格を判定しません。';
  $('fiveList').replaceChildren();
  for(const e of five.ordered){const item=document.createElement('div');item.className='five-item';const head=document.createElement('div');head.className='five-head';const title=document.createElement('strong');title.textContent=`${e.symbol} ${e.label}｜${e.topic}`;const val=document.createElement('span');val.textContent=`${e.score}/3`;head.append(title,val);const track=document.createElement('div');track.className='five-track';const bar=document.createElement('div');bar.style.width=`${e.score/3*100}%`;track.append(bar);const small=document.createElement('small');small.textContent=e.tip;item.append(head,track,small);$('fiveList').append(item);}
- $('fiveSummary').textContent=five.top.length===0?'今回は五行の質問で目立つ回答はありませんでした。':`最近の暮らしで見直したいテーマ：${five.top.map(e=>`${e.label}（${e.topic}）`).join('・')}。複数あれば並列に扱います。`;
+ $('fiveSummary').textContent=elementCalm?'五行の中庸傾向：各項目で気になる回答が少なく、大きな偏りが目立ちません。':elementBroad?'五行の複合負担傾向：5項目すべての気がかりが高めです。均等でも中庸とは判定しません。':five.top.length===0?'今回は五行の質問で目立つ回答はありませんでした。':`最近の暮らしで見直したいテーマ：${five.top.map(e=>`${e.label}（${e.topic}）`).join('・')}。複数あれば並列に扱います。`;
  // 体質と五行を一緒に読む（独立した設問の組合せ。因果や診断を意味しない）
  let bridge=document.getElementById('constitutionFiveBridge');
  if(!bridge){bridge=document.createElement('section');bridge.id='constitutionFiveBridge';bridge.className='resultbox';bridge.style.cssText='margin:18px 0;padding:18px;border-radius:16px;border:2px solid #a2bfaa;background:#f2f8ee;color:#233c30;line-height:1.8';$('elementText').closest('.resultbox').before(bridge);}
@@ -69,6 +78,28 @@ function finish(){
  $('pointName').textContent=isTie||isZero?'ツボ押しは希望に応じて：参考情報のみ':`セルフケアの参考：${t.point}（${t.code}）`;
  $('pointWhere').textContent=isTie||isZero?'同点や根拠が乏しい結果から、特定のツボを推奨しません。':t.where;
  renderFinalReport({types:result.ordered.filter(x=>x.score===t.score).slice(0,3), elements:five.ordered.filter(x=>x.score===five.ordered[0].score).slice(0,2), guide, lowEvidence:isZero||five.ordered[0].score===0});
+ if(overallCalm){
+   const report=$('toyoFinalReport');
+   report.replaceChildren();
+   const add=(tag,content)=>{const el=document.createElement(tag);el.textContent=content;report.append(el);return el;};
+   add('div','東洋ケアラボ｜あなたの総合セルフケアレポート');
+   add('h2','中庸・調和傾向｜いまのバランスを大切に');
+   add('p','今回の回答では、8体質と五行5項目のどちらにも強い偏りが見られませんでした。五行でいう調和を思わせる回答パターンですが、体調が常によいことを保証するものではありません。');
+   add('h3','あなたへのアドバイス');
+   add('p','調子が安定しているときは、無理に何かを足すより、今の生活でうまくいっている習慣を維持することが大切。食事の時間、睡眠、気分転換、心地よい運動のバランスを振り返りましょう。');
+   add('h3','食事・活動・休養');
+   add('p','食事は欠食を避けて偏りなく。運動は翌日に強い疲労を残さない程度を目安に。忙しい日も短い休息を確保して、生活のペースを乱しすぎないようにしましょう。');
+   add('h3','ツボのセルフケア');
+   add('p','目立つ不調がない場合、特定のツボを選んで押す必要はありません。身体の緊張が気になるときは、無理に強く押さず、呼吸やストレッチなど負担の少ない方法を優先しましょう。');
+   add('h3','これからの7日間');
+   add('p','睡眠・食事・活動のリズムをひとつだけ意識して、調子がよい日と忙しい日の違いを見つけてみましょう。');
+ }else{
+   const report=$('toyoFinalReport');
+   const insert=document.createElement('div');insert.className='tlr-section';
+   const h=document.createElement('h3');h.textContent='五行のバランスについて';insert.append(h);
+   const txt=document.createElement('p');txt.textContent=elementCalm?'五行の5項目は全体に低く、生活上の負担の偏りが小さい回答です。体質の気がかりがある場合は、その内容に合わせて休養や食事を調整しましょう。':elementBroad?'五行の5項目すべてに気がかりが見られます。平均的に揃っていても調和とは扱わず、まず負担を一つずつ減らすことを優先しましょう。':'木・火・土・金・水の違いは、今どの生活テーマに注意を向けるとよいかを知る手掛かりです。';insert.append(txt);report.append(insert);
+ }
+
  bridge.remove();
  // 簡易版の五行解説は総合レポートの後ろに配置（詳しい説明は残す）。
  const resultPanel=document.getElementById('result');
