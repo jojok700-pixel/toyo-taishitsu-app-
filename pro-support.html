@@ -19,18 +19,18 @@
 <h3>脈診（任意）</h3>
 <p class="hint">左右の寸・関・尺から必要な部位を記録します。各部位の虚実は個別に選択できます。</p>
 <div class="pulse-grid" role="group" aria-label="左右の寸関尺"><div class="pulse-row pulse-head"><strong>側</strong><strong>寸</strong><strong>関</strong><strong>尺</strong></div>
-<div class="pulse-row"><strong>右</strong><select id="pulse-r-cun" aria-label="右寸"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">判断保留</option></select><select id="pulse-r-guan" aria-label="右関"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">判断保留</option></select><select id="pulse-r-chi" aria-label="右尺"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">判断保留</option></select></div>
-<div class="pulse-row"><strong>左</strong><select id="pulse-l-cun" aria-label="左寸"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">判断保留</option></select><select id="pulse-l-guan" aria-label="左関"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">判断保留</option></select><select id="pulse-l-chi" aria-label="左尺"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">判断保留</option></select></div></div>
+<div class="pulse-row"><strong>右</strong><select id="pulse-r-cun" aria-label="右寸"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="normal">平脈</option></select><select id="pulse-r-guan" aria-label="右関"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="normal">平脈</option></select><select id="pulse-r-chi" aria-label="右尺"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="normal">平脈</option></select></div>
+<div class="pulse-row"><strong>左</strong><select id="pulse-l-cun" aria-label="左寸"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="normal">平脈</option></select><select id="pulse-l-guan" aria-label="左関"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="normal">平脈</option></select><select id="pulse-l-chi" aria-label="左尺"><option value="">未確認</option><option value="def">虚</option><option value="excess">実</option><option value="normal">平脈</option></select></div></div>
 <style>.pulse-grid{overflow-x:auto;margin:12px 0}.pulse-row{display:grid;grid-template-columns:38px repeat(3,minmax(0,1fr));gap:5px;align-items:center;margin-bottom:8px}.pulse-row select{min-width:0;width:100%;padding:10px 2px;font-size:14px}.pulse-row strong{text-align:center}.pulse-head{font-size:14px}</style>
 <label class="field" for="pulse-quality">その他の脈状（任意）</label><select id="pulse-quality"><option value="">未確認</option><option>無力・弱い</option><option>有力・強い</option><option>弦・緊張感</option><option>滑</option><option>細</option><option>その他</option></select>
 <label class="field" for="pulse-judgement">脈診を踏まえた経絡の虚実（施術者の判断）</label>
 <select id="pulse-judgement"><option value="">未判定</option><option value="def">虚</option><option value="excess">実</option><option value="neutral">虚実不明</option></select>
-<p class="hint">ここで選んだ虚実は下の六十九難の選択に反映されます。脈状だけから経絡の虚実を自動判定しません。</p>
+<p class="hint">左右六部を手掛かりに候補経絡を整理し、舌診・腹診・五臓所見と照合します。</p>
 </div><button class="button" id="submit">弁証候補を表示する</button></section>
 <section id="results" class="hidden" aria-live="polite"><h2>弁証候補・キャラクター・根拠</h2><p class="hint">50証から症状に合う参考候補を整理します。関連所見と臓腑候補を参照します。八綱の照合は明瞭な証のみ対応し、舌の詳細照合は一部に限ります。診断確率ではありません。</p><div id="resultCards"></div><p class="warning">未確認所見が多い場合、候補同士の区別は困難です。その他の四診・経過・必要な医学的評価と照合してください。</p><a href="./zukan.html">弁証50選のキャラクター図鑑を見る</a><button class="button" style="background:#e8eee4;color:#28553a" id="recheck">入力を見直す</button></section><section id="nanjing69" aria-label="難経六十九難の参考選穴">
 <h2>古典選穴｜難経六十九難（ろくじゅうきゅうなん）</h2>
 <p class="hint">弁証論治の主穴・配穴とは別の参考表です。脈診を中心に腹診なども照合し、経絡の虚実を施術者が判断してください。弁証候補から自動的に虚実を決定しません。</p>
-<label class="field" for="nj-meridian">対象経絡</label><select id="nj-meridian"><option value="">経絡を選択してください</option></select>
+<div id="nj-auto-candidates" class="result-reason" aria-live="polite">脈診を入力すると、参考になる経絡候補を表示します。</div><label class="field" for="nj-meridian">対象経絡（必要に応じて修正）</label><select id="nj-meridian"><option value="">経絡を選択してください</option></select>
 <label class="field" for="nj-state">その経絡の虚実</label><select id="nj-state"><option value="">虚実を選択してください</option><option value="def">虚：母を補う</option><option value="excess">実：子を瀉す</option><option value="neutral">虚実不明・不虚不実</option></select>
 <div id="nj-evidence" class="result-reason" aria-live="polite"><p>脈診・腹診の所見を選ぶと確認事項が表示されます。</p></div><div id="nj-output" class="result-reason" role="status" aria-live="polite"><p>経絡と虚実を選ぶと、2穴の参考選穴が表示されます。</p></div>
 <p class="hint">虚実は脈診と他の所見を併せて施術者が決めます。急性症状や禁忌は別途確認してください。</p>
@@ -369,12 +369,51 @@ function pulseSummary(){const choices=[['右寸','pulse-r-cun'],['右関','pulse
  const quality=document.getElementById('pulse-quality'),judgement=document.getElementById('pulse-judgement'),state=document.getElementById('nj-state'),evidence=document.getElementById('nj-evidence');
  const ids=['pulse-r-cun','pulse-r-guan','pulse-r-chi','pulse-l-cun','pulse-l-guan','pulse-l-chi'];
  function update(){
-  if(judgement.value){state.value=judgement.value;state.dispatchEvent(new Event('change'));}
+  
   const old=document.getElementById('pulse-evidence-note');if(old)old.remove();
   const note=document.createElement('p');note.id='pulse-evidence-note';note.textContent='脈診：'+pulseSummary()+' ／ 脈状：'+(quality.value||'未確認')+' ／ 六十九難に適用する経絡の虚実：'+(judgement.selectedOptions[0]?.textContent||'未判定');evidence.prepend(note);
   if(latestRanked.length)renderClinicalSummary();
  }
  [quality,judgement,...ids.map(id=>document.getElementById(id))].forEach(el=>el.addEventListener('change',update));
  update();
+})();
+
+// 脈診→経絡候補の照合。六部配当には流派差があり、順位は伝統的な参考整理。
+const PULSE_ROUTE = {
+ 'pulse-r-cun':['LU','LI'], 'pulse-r-guan':['SP','ST'], 'pulse-r-chi':['KI','TE'],
+ 'pulse-l-cun':['HT','SI','PC'], 'pulse-l-guan':['LR','GB'], 'pulse-l-chi':['KI','BL']
+};
+const ROUTE_ORGAN={LU:'肺',LI:'肺',SP:'脾',ST:'脾',KI:'腎',TE:'腎',HT:'心',SI:'心',PC:'心',LR:'肝',GB:'肝',BL:'腎'};
+const ROUTE_ABDOMEN={'季肋部':['LR','GB'],'心下部':['ST','SP','HT','PC'],'臍周囲':['SP','ST'],'下腹部':['KI','BL','TE']};
+function suggestChannels(){
+ const target=document.getElementById('nj-auto-candidates');if(!target)return;
+ const channel=document.getElementById('nj-meridian'), state=document.getElementById('nj-state');
+ const ab=document.getElementById('ab-area')?.value||'', tong=document.getElementById('tongue')?.value||'';
+ const entries=[];
+ for(const [id,codes] of Object.entries(PULSE_ROUTE)){
+  const el=document.getElementById(id);if(!el||!['def','excess'].includes(el.value))continue;
+  for(const code of codes){let score=2;const organ=ROUTE_ORGAN[code];
+   // 五臓所見で一致した場合は候補の参考順位に反映
+   const selected=[...document.querySelectorAll('#organs .selected, #organs [aria-pressed="true"], #organs input:checked')].map(x=>x.textContent||x.value||'').join('');
+   if(selected.includes(organ))score+=2;
+   if((ROUTE_ABDOMEN[ab]||[]).includes(code))score+=1;
+   if(tong==='red'&&el.value==='excess')score+=.5;
+   if(tong==='pale'&&el.value==='def')score+=.5;
+   entries.push({code,value:el.value,score,where:el.getAttribute('aria-label')||id});
+  }
+ }
+ entries.sort((a,b)=>b.score-a.score);
+ if(!entries.length){target.textContent='左右の寸・関・尺で「虚」か「実」を選ぶと、経絡候補が表示されます。';return;}
+ const top=entries.slice(0,6);target.innerHTML='<strong>四診から照合する経絡候補</strong><div id="nj-candidate-buttons" class="choice"></div><p class="hint">候補は六部の位置を中心に整理したもの。腹診・舌診と症状を合わせて経絡を確認すると、六十九難の2穴が表示されます。</p>';
+ const holder=document.getElementById('nj-candidate-buttons');
+ top.forEach(e=>{const meta=NJ69_CHANNELS.find(r=>r[0]===e.code);const btn=document.createElement('button');btn.type='button';btn.className='button';btn.style.cssText='background:#edf5ef;color:#244d37;width:auto;padding:9px;margin:5px 5px 2px 0';btn.textContent=e.where+' '+meta[1]+'・'+(e.value==='def'?'虚':'実');btn.onclick=()=>{channel.value=e.code;state.value=e.value;document.getElementById('pulse-judgement').value=e.value;nj69Update();if(latestRanked.length)renderClinicalSummary();holder.querySelectorAll('button').forEach(b=>b.style.outline='');btn.style.outline='2px solid #286a4a'};holder.appendChild(btn)});
+ // 唯一の経絡に決定できないケースは自動で選択しない
+ const distinct=new Set(entries.map(e=>e.code+'-'+e.value));
+ if(distinct.size===1&&!channel.value){channel.value=entries[0].code;state.value=entries[0].value;nj69Update()}
+}
+(function initPulseSuggestions(){
+ ['pulse-r-cun','pulse-r-guan','pulse-r-chi','pulse-l-cun','pulse-l-guan','pulse-l-chi','tongue','ab-area','ab-quality','pulse-judgement'].forEach(id=>document.getElementById(id)?.addEventListener('change',suggestChannels));
+ document.getElementById('organs')?.addEventListener('click',()=>queueMicrotask(suggestChannels));
+ suggestChannels();
 })();
 </script></body></html>
