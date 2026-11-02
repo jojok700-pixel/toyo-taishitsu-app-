@@ -262,26 +262,49 @@ ranked.forEach((p,i)=>{
 });
 latestRanked=ranked;renderClinicalSummary();
 if(!ranked.length)target.innerHTML='<p>入力された症状と対応する候補がありません。所見を見直してください。</p>';if(input.yinYang) {let p=document.createElement('p');p.className='hint';p.textContent='陰陽の入力：'+input.yinYang+'。陰陽は参考記録とし、候補の順位付けには使っていません。';target.append(p)}document.getElementById('results').classList.remove('hidden');document.getElementById('results').scrollIntoView({behavior:'smooth'});}
+function getNJ69Selection(){
+ const code=val('nj-meridian'),state=val('nj-state');
+ const r=NJ69_CHANNELS.find(x=>x[0]===code);
+ if(!r||!['def','excess'].includes(state))return null;
+ const isDef=state==='def';
+ const relation=NJ69_RELATED[code][isDef?0:1];
+ const other=NJ69_CHANNELS.find(x=>x[0]===relation);
+ const own=[isDef?r[4]:r[8],isDef?r[5]:r[9],isDef?r[6]:r[10]];
+ const pair=NJ69_ELEMENT_POINTS[relation];
+ if(!other||!pair)return null;
+ return {channel:r[1],code,element:r[2],state,method:isDef?'補母':'瀉子',relationship:isDef?'母経':'子経',otherChannel:other[1],own,pair};
+}
 function renderClinicalSummary(){
  const section=document.getElementById('clinical-summary'),out=document.getElementById('clinical-summary-body');
  if(!latestRanked.length){section.classList.add('hidden');return;}
- const p=latestRanked[0],second=latestRanked[1];
- const t=treatmentMethods[p.name],g=pointsForPattern(p);
- const chosen=[...symptoms];const organs=[...os.querySelectorAll('input:checked')].map(e=>e.value);
- const ax=[['表裏','location'],['寒熱','temperature'],['虚実','strength'],['陰陽','yinYang']].map(([n,id])=>val(id)?n+'：'+val(id):'').filter(Boolean);
- const pulse=document.getElementById('pulse-quality').selectedOptions[0]?.textContent||'未確認';
- const side=pulseSummary(),pulseJud=document.getElementById('pulse-judgement').selectedOptions[0]?.textContent||'未確認';
+ const p=latestRanked[0],second=latestRanked[1],t=treatmentMethods[p.name],g=pointsForPattern(p);
+ const chosen=[...symptoms];
+ const organs=[...os.querySelectorAll('input:checked')].map(e=>e.value);
  const tongue=document.getElementById('tongue').selectedOptions[0]?.textContent||'未確認';
  const abdomen=[val('ab-area'),val('ab-quality'),val('ab-notes')].filter(Boolean);
- const meridian=document.getElementById('nj-meridian').selectedOptions[0]?.textContent||'';
- const njState=val('nj-state');const njText=document.getElementById('nj-output')?.innerText||'';
- const needCheck=p.contrad.length?`今回の八綱入力には候補と整合しない所見（${safe(p.contrad.join('・'))}）があります。治法・選穴を固定せず、最初に虚実と寒熱の再評価を行います。`:'八綱と主症状の整合を再確認し、特徴的な反証所見がないかを検討します。';
- out.innerHTML=`<div class="result-reason"><strong>1．今回の見立てと病機</strong><p>主訴として<strong>${safe(chosen.join('・'))}</strong>が選択され、五臓所見は<strong>${safe(organs.join('・')||'未選択')}</strong>です。八綱は${safe(ax.join(' ／ ')||'未確認')}として整理されています。</p><p>現時点の第一候補は<strong>${renderReading(p.name,patternReadings[p.name])}</strong>です。${safe(p.support)} これは候補の整理であり、確定した証ではありません。</p><p>${safe(needCheck)}</p></div>
- <div class="result-reason"><strong>2．治法をどう組み立てるか</strong><p>第一候補を採用する場合の基本治法は、<strong>${t?renderMethodReading(t[0]):'個別検討'}</strong>です。${safe(t?.[1]||'兼証と病機を再評価して治法を選びます。')}</p><p>主症状だけでなく、発症時期、増悪・緩解因子、生活背景と舌腹脈の所見を突き合わせます。${second?`第二候補の<strong>${renderReading(second.name,patternReadings[second.name])}</strong>とも比較し、${safe(p.contrast)} `:''}寒熱・虚実の組み合わせが変われば治法の優先順位も見直します。</p></div>
- <div class="result-reason"><strong>3．選穴の考え方</strong><p>弁証論治での主穴は${g&&g.main.length?`<strong>${safe(g.main.map(x=>x[0]).join('・'))}</strong>`:'まだ個別精査が必要'}、配穴は${g&&g.add.length?`<strong>${safe(g.add.map(x=>x[0]).join('・'))}</strong>`:'随伴症状と兼証に応じて検討'}です。${safe(g?.note||'経絡、病機、随伴症状を照合して組み立てます。')}</p><p>主穴は主要病機に、配穴は随伴症状や兼証に対する目的を明確にして選びます。穴数を増やす前に、選穴理由が主訴と病機に対応しているかを確認します。</p></div>
- <div class="result-reason"><strong>4．舌診・腹診・脈診を照合</strong><p>舌診：${safe(tongue)}。腹診：${safe(abdomen.join(' ／ ')||'未確認')}。脈診：${safe(pulse)}、部位：${safe(side||'未選択')}、経絡の虚実判断：${safe(pulseJud)}。</p><p>脈診からの虚実判断と、八綱・腹部所見・症状が同じ方向を示しているかが重要です。一致しなければ判断を保留し、所見を取り直します。${safe(p.check)}</p></div>
- <div class="result-reason"><strong>5．弁証論治と六十九難を統合して考える</strong><p>今回の弁証候補は<strong>${renderReading(p.name,patternReadings[p.name])}</strong>、基本治法は<strong>${t?renderMethodReading(t[0]):'個別検討'}</strong>です。まず症状・舌診・腹診を根拠に病機を整理し、主穴${safe(g.main.map(x=>x[0]).join('・')||'要検討')}と配穴${safe(g.add.map(x=>x[0]).join('・')||'随伴所見に応じて検討')}の役割を定めます。</p><p>脈診は<strong>${safe(pulseSummary())}</strong>。この六部の記録と全身所見を照合して対象経絡の虚実を決め、六十九難では${meridian&&njState&&njState!=='neutral'?`<strong>${safe(meridian)}</strong>の<strong>${njState==='def'?'虚（母を補う）':'実（子を瀉す）'}</strong>を選択しています。2穴の参考組み合わせは<strong>${safe(njText.slice(0,350))}</strong>です。`:'現時点で対象経絡または虚実が保留されているため、2穴を固定せず脈診所見を再検討します。'} 六十九難の2穴は、弁証論治の主穴と目的が重なるか、異なるかを確認してから採否を判断します。</p><p>両者が同じ治療目的を支持するなら選穴の中心を明確にし、異なるなら「脈診による経絡虚実」と「臓腑弁証による病機」のどの所見が一致しないのかを見直します。脈診の左右六部だけから臓腑や証を機械的に確定せず、腹診、舌診、寒熱・虚実、主訴の経過を合わせて検討してください。</p></div>
- <div class="result-reason"><strong>6．最終確認と施術後の再評価</strong><p>施術前に、今回の症状がいつから続いているか、急激な変化や危険徴候がないかを確認します。主訴、疼痛や不快感の程度、生活動作への影響など、比較できる指標を一つ決めます。</p><p>施術後は選んだ指標の変化を確認し、改善・不変・悪化を記録します。期待した変化が得られなければ、弁証の再検討、選穴の再構成、必要な医療機関への相談につなげます。</p><p><strong>まとめ：</strong>今回の候補は<strong>${safe(p.name)}</strong>、治法の方向性は<strong>${safe(t?.[0]||'個別検討')}</strong>。主症状と四診が一致するかを判断軸とし、臨床上の根拠を確認してから選穴を組み立ててください。六十九難の選穴は脈診で判断した経絡虚実に従い、弁証論治の主穴・配穴と目的を比較します。まず主訴に対応する最小限の選穴方針を定め、施術前後で主症状、腹部の所見、脈診の左右差や虚実の変化を再評価してください。所見が食い違う場合は一律に穴数を増やすより、病機と経絡の選択を見直すのが妥当です。</p></div>`;
+ const quality=document.getElementById('pulse-quality').selectedOptions[0]?.textContent||'未確認';
+ const jud=document.getElementById('pulse-judgement').selectedOptions[0]?.textContent||'未判定';
+ const positions=[['右','pulse-r-cun','pulse-r-guan','pulse-r-chi'],['左','pulse-l-cun','pulse-l-guan','pulse-l-chi']];
+ const pulseRows=positions.map(([side,...ids])=>({side,entries:ids.map((id,i)=>({name:['寸','関','尺'][i],value:document.getElementById(id)?.selectedOptions[0]?.textContent||'未確認',actual:!!document.getElementById(id)?.value}))}));
+ const pulseLine=pulseRows.map(r=>r.side+'：'+r.entries.map(v=>v.name+' '+v.value).join(' ／ ')).join('　');
+ const observed=pulseRows.flatMap(r=>r.entries.filter(e=>e.actual).map(e=>r.side+e.name+' '+e.value));
+ const nj=getNJ69Selection();
+ const main=g?.main?.map(x=>x[0])||[],add=g?.add?.map(x=>x[0])||[];
+ const method=t?.[0]||'兼証を踏まえて検討';
+ const hasConflict=p.contrad.length>0;
+ const keySymptoms=p.matches.length?p.matches.join('・'):chosen.join('・');
+ const firstSection=`主訴のうち<strong>${safe(keySymptoms)}</strong>が候補の所見と重なり、五臓所見では<strong>${safe(organs.join('・')||'未選択')}</strong>を記録しています。第一候補の<strong>${renderReading(p.name,patternReadings[p.name])}</strong>は、${safe(p.support)}。`;
+ const compare=second?`比較すべき候補は<strong>${renderReading(second.name,patternReadings[second.name])}</strong>です。${safe(p.contrast)}。`:`${safe(p.contrast)}。`;
+ const logic=hasConflict?`ただし八綱との不一致（${safe(p.contrad.join('・'))}）があるため、第一候補を前提に選穴を固定せず、相反する所見を優先して再確認します。`:`この候補を中心に考えるなら、${safe(p.check)}を確認すると病機の輪郭が明確になります。`;
+ const pulseEval=observed.length?`六部で記録した所見は<strong>${safe(observed.join('、'))}</strong>です。左右差や虚実の分布を、${safe(keySymptoms)}と腹診の所見に重ね、どの経絡を中心にするか検討します。`:'左右の寸・関・尺はまだ未入力です。経絡虚実の判断根拠として必要な部位を記録すると、六十九難の選穴と照合しやすくなります。';
+ const njDisplay=nj?`<div class="nj-summary-points"><strong>${safe(nj.channel)}（${safe(nj.code)}）・${nj.state==='def'?'虚':'実'}／${safe(nj.method)}</strong><div class="nj-summary-grid"><div><small>① 自経の${nj.state==='def'?'母穴':'子穴'}</small><b>${safe(nj.own[0])}</b><span>${safe(nj.own[1])}・${safe(nj.own[2])}</span></div><div><small>② ${safe(nj.otherChannel)}の穴</small><b>${safe(nj.pair[0])}</b><span>${safe(nj.pair[1])}・${safe(nj.pair[2])}</span></div></div></div>`:`<p>六十九難の対象経絡と虚実を選択すると、ここに<strong>2穴の名称と経穴番号</strong>が表示されます。</p>`;
+ const practice=nj?`脈診の判断が<strong>${safe(nj.channel)}の${nj.state==='def'?'虚':'実'}</strong>を支持するなら、六十九難の${safe(nj.method)}に従った<strong>${safe(nj.own[0])}＋${safe(nj.pair[0])}</strong>の組み合わせを、今回の${safe(p.name)}の治法<strong>${safe(method)}</strong>と照らして検討します。二穴と弁証論治の主穴には選び方の違いがあるため、主訴に対してどちらを優先するか、重複して使う理由があるかを明確にします。`:'現時点では六十九難の二穴を固定しません。脈診で必要な経絡と虚実を選んだ後に、主穴・配穴との役割を比較します。';
+ out.innerHTML=`<style>.nj-summary-points{padding:14px;background:#f0f7f0;border-radius:13px;margin:12px 0}.nj-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.nj-summary-grid>div{padding:11px;background:white;border-radius:10px;display:flex;flex-direction:column;gap:4px}.nj-summary-grid b{font-size:19px}.nj-summary-grid small,.nj-summary-grid span{font-size:12px;color:#526759}@media(max-width:380px){.nj-summary-grid{grid-template-columns:1fr}}</style>
+ <div class="result-reason"><strong>1．症状から考える病機と鑑別</strong><p>${firstSection}</p><p>${compare}${logic}</p></div>
+ <div class="result-reason"><strong>2．基本治法と弁証論治による選穴</strong><p>基本治法は<strong>${t?renderMethodReading(method):safe(method)}</strong>。${safe(t?.[1]||'症状と兼証を踏まえて方針を組み立てます。')}</p><p>主穴の候補は<strong>${safe(main.join('・')||'未設定')}</strong>、配穴は<strong>${safe(add.join('・')||'随伴症状に応じて検討')}</strong>。${safe(g?.note||'主訴と病機に対応する目的から選穴を考えます。')}</p><p>まず${safe(keySymptoms)}に対応する主穴の意図を定め、配穴は随伴する所見がある場合に加えます。${hasConflict?'八綱に不一致があるため治法の優先順位を再評価します。':''}</p></div>
+ <div class="result-reason"><strong>3．舌・腹・左右六部の脈診から考える</strong><p>舌診：${safe(tongue)}。腹診：${safe(abdomen.join(' ／ ')||'未確認')}。脈状：${safe(quality)}。経絡虚実の判断：${safe(jud)}。</p><p><strong>${safe(pulseLine)}</strong></p><p>${pulseEval}</p></div>
+ <div class="result-reason"><strong>4．難経六十九難を合わせた2穴の検討</strong>${njDisplay}<p>${practice}</p></div>
+ <div class="result-reason"><strong>5．今回の所見を踏まえた総合的な施術考察</strong><p>今回の中心は<strong>${renderReading(p.name,patternReadings[p.name])}</strong>に対する<strong>${t?renderMethodReading(method):safe(method)}</strong>です。${safe(keySymptoms)}という自覚症状に、舌・腹・左右六部の脈を重ねて、局所症状だけに引っ張られず病機を組み立てます。${compare}</p><p>${practice}</p><p>優先したいのは、病機に対応する主穴${safe(main.length?'（'+main.join('・')+'）':'')}の役割と、脈診から導いた六十九難の二穴の役割を区別しつつ、同じ主訴に対して無理のない選穴構成を作ることです。${hasConflict?'八綱の不一致があるので、治法を決める前に所見の再確認を優先します。':'舌・腹・脈の所見が病機と一致するほど、選穴の意図が整理しやすくなります。'}</p><p>施術前後は<strong>${safe(chosen[0]||'主訴')}</strong>の程度と、記録した腹部・脈診所見の変化を比較します。主訴と四診の変化が一致しない場合は、穴数を増やす前に<strong>${safe(p.name)}</strong>という見立て、治法<strong>${safe(method)}</strong>、経絡選択のどこを見直すべきか検討します。急激な悪化や危険徴候がある場合は必要な医療評価を優先します。</p></div>`;
  section.classList.remove('hidden');
 }
 ['nj-meridian','nj-state','pulse-quality','pulse-r-cun','pulse-r-guan','pulse-r-chi','pulse-l-cun','pulse-l-guan','pulse-l-chi','pulse-judgement','tongue','ab-area','ab-quality'].forEach(id=>document.getElementById(id)?.addEventListener('change',()=>{if(latestRanked.length)queueMicrotask(renderClinicalSummary)}));
@@ -328,7 +351,7 @@ function nj69Update(){
  const make=(label,p)=>'<div style="border:1px solid #c3d7c5;border-radius:12px;padding:12px;margin:8px 0"><small>'+label+'</small><p style="font-weight:700;font-size:20px;margin:4px 0">'+p[0]+'</p><span>'+p[1]+'・'+p[2]+'</span></div>';
  out.innerHTML='<strong>'+r[1]+'（'+r[2]+'）｜'+(deficient?'虚：補母':'実：瀉子')+'</strong><p>'+r[2]+'の'+(deficient?'母':'子')+'は'+(deficient?r[3]:r[7])+'。本経と'+(deficient?'母経':'子経')+'の2穴を参考表示します。</p>'+make('① 自経：'+r[1],own)+make('② '+(deficient?'母経':'子経')+'：'+relatedChannel[1],pair)+'<p class="hint">これは二穴選穴方式の参考例です。実際の経絡判断と使用穴は施術者が決めてください。</p>';
 }
-(function nj69Init(){const el=document.getElementById('nj-meridian');NJ69_CHANNELS.forEach(r=>{const option=document.createElement('option');option.value=r[0];option.textContent=r[1]+'（'+r[2]+'・'+r[0]+'）';el.appendChild(option)});el.addEventListener('change',nj69Update);document.getElementById('nj-state').addEventListener('change',nj69Update)})();
+(function nj69Init(){const el=document.getElementById('nj-meridian');NJ69_CHANNELS.forEach(r=>{const option=document.createElement('option');option.value=r[0];option.textContent=r[1]+'（'+r[2]+'・'+r[0]+'）';el.appendChild(option)});el.addEventListener('change',()=>{nj69Update();if(latestRanked.length)renderClinicalSummary()});document.getElementById('nj-state').addEventListener('change',()=>{nj69Update();if(latestRanked.length)renderClinicalSummary()})})();
 
 // 腹診は選穴の参考メモ。虚実は自動判定しない。
 (function initFourDiagnosis(){
